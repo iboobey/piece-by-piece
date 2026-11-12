@@ -12,16 +12,59 @@ var position_treshold : float = 40.0
 # Rotation Variables
 var target_rotation : float = 0.0
 var rotation_treshold : float = 15.0
+var rotation_speed : float = 3.0
 
+# Drag Variables
+var is_draging : bool = false
+var drag_offset : Vector2 = Vector2.ZERO
+
+var locked : bool = false
 
 func _ready() -> void:
 	pass
-	"await PUZZLE_GRID.grid_is_set
 	target_position = PUZZLE_GRID.piece_position_on_grid(GRID_X, GRID_Y)
-	print(target_position)"
+	print(target_position)
 
 
-#func _process(_delta: float) -> void:
-#	if global_position.distance_to(target_position) >= position_treshold:
-#		global_position = target_position
-#		print("SNAP!")
+func _unhandled_input(event: InputEvent) -> void:
+	if not locked:
+		grab_and_drag(event)
+
+
+func grab_and_drag(event):
+	if event is InputEventMouseButton and event.button_index == MOUSE_BUTTON_LEFT:
+		if event.pressed:
+			if global_position.distance_to(get_global_mouse_position()) < 50:
+				is_draging = true
+				drag_offset = global_position - get_global_mouse_position()
+		else:
+			is_draging = false
+
+
+func rotate_piece(delta):
+	if not locked:
+		if Input.is_action_pressed("rotate_clockwise"):
+			rotation += rotation_speed * delta
+		if Input.is_action_pressed("rotate_anticlockwise"):
+			rotation -= rotation_speed * delta
+
+
+func _process(delta: float) -> void:
+	rotate_piece(delta)
+	if is_draging:
+		global_position = get_global_mouse_position() + drag_offset
+	
+	check_target()
+
+
+func check_target():
+	var rotation_modulated = fposmod(rotation_degrees, 360)
+	print(rotation_modulated)
+	if global_position.distance_to(target_position) < position_treshold:
+		if rotation_modulated < rotation_treshold or rotation_degrees > (360 - rotation_treshold):
+			rotation_degrees = 0
+			global_position = target_position
+			locked = true
+			is_draging = false
+			
+	

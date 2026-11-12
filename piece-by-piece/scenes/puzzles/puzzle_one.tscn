@@ -1,10 +1,19 @@
 [gd_scene format=3 uid="uid://ggx41gfvwmvl"]
 
 [ext_resource type="PackedScene" uid="uid://clpsedr3e1fja" path="res://scenes/elements/puzzle_grid.tscn" id="1_tx7lx"]
+[ext_resource type="PackedScene" uid="uid://drlo4js7facl4" path="res://scenes/elements/puzzle_piece.tscn" id="2_tx7lx"]
 
 [node name="PuzzleOne" type="Node2D" unique_id=429189301]
 
 [node name="PuzzleGrid" parent="." unique_id=1270099975 instance=ExtResource("1_tx7lx")]
-GRID_X = 7
-GRID_Y = 4
-GRID_SIZE = 150
+GRID_X = 8
+GRID_Y = 5
+GRID_SIZE = 128
+
+[node name="Pieces" type="Node2D" parent="." unique_id=1078004608]
+
+[node name="PuzzlePiece" parent="Pieces" unique_id=2072894686 node_paths=PackedStringArray("PUZZLE_GRID") instance=ExtResource("2_tx7lx")]
+position = Vector2(113, 216)
+GRID_Y = 5
+GRID_X = 2
+PUZZLE_GRID = NodePath("../../PuzzleGrid")
