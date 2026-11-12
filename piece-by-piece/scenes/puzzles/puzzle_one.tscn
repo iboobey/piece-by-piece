@@ -1,0 +1,10 @@
+[gd_scene format=3 uid="uid://ggx41gfvwmvl"]
+
+[ext_resource type="PackedScene" uid="uid://clpsedr3e1fja" path="res://scenes/elements/puzzle_grid.tscn" id="1_tx7lx"]
+
+[node name="PuzzleOne" type="Node2D" unique_id=429189301]
+
+[node name="PuzzleGrid" parent="." unique_id=1270099975 instance=ExtResource("1_tx7lx")]
+GRID_X = 7
+GRID_Y = 4
+GRID_SIZE = 150
