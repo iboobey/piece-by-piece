@@ -6,14 +6,37 @@
 [node name="PuzzleOne" type="Node2D" unique_id=429189301]
 
 [node name="PuzzleGrid" parent="." unique_id=1270099975 instance=ExtResource("1_tx7lx")]
-GRID_X = 8
-GRID_Y = 5
-GRID_SIZE = 128
+GRID_X = 32
+GRID_Y = 20
+GRID_SIZE = 32
 
 [node name="Pieces" type="Node2D" parent="." unique_id=1078004608]
 
 [node name="PuzzlePiece" parent="Pieces" unique_id=2072894686 node_paths=PackedStringArray("PUZZLE_GRID") instance=ExtResource("2_tx7lx")]
-position = Vector2(113, 216)
+position = Vector2(217, 489)
 GRID_Y = 5
 GRID_X = 2
 PUZZLE_GRID = NodePath("../../PuzzleGrid")
+PUZZLE_MODULE = Color(1, 0.33811414, 0.23632264, 1)
+
+[node name="PuzzlePiece2" parent="Pieces" unique_id=2030280572 node_paths=PackedStringArray("PUZZLE_GRID") instance=ExtResource("2_tx7lx")]
+position = Vector2(1076, 606)
+rotation = 2.557566
+GRID_Y = 3
+GRID_X = 2
+PUZZLE_GRID = NodePath("../../PuzzleGrid")
+PUZZLE_MODULE = Color(1, 0.3590473, 0.6107856, 1)
+
+[node name="PuzzlePiece3" parent="Pieces" unique_id=1228614711 node_paths=PackedStringArray("PUZZLE_GRID") instance=ExtResource("2_tx7lx")]
+position = Vector2(153, 465)
+rotation = 0.59905493
+GRID_Y = 1
+GRID_X = 6
+PUZZLE_GRID = NodePath("../../PuzzleGrid")
+PUZZLE_MODULE = Color(0.78423136, 1, 0.24344015, 1)
+
+[node name="PuzzlePiece4" parent="Pieces" unique_id=1862630047 node_paths=PackedStringArray("PUZZLE_GRID") instance=ExtResource("2_tx7lx")]
+GRID_Y = 5
+GRID_X = 8
+PUZZLE_GRID = NodePath("../../PuzzleGrid")
+PUZZLE_MODULE = Color(0.039267063, 0.33434623, 1, 1)

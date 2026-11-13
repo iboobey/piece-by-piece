@@ -6,6 +6,7 @@
 [node name="PuzzlePiece" type="Node2D" unique_id=2072894686]
 script = ExtResource("1_4sx5x")
 
-[node name="Sprite2D" type="Sprite2D" parent="." unique_id=645148781]
-modulate = Color(1, 0.0627451, 1, 1)
+[node name="PuzzlePieceSprite" type="Sprite2D" parent="." unique_id=645148781]
+unique_name_in_owner = true
+scale = Vector2(0.25, 0.25)
 texture = ExtResource("2_ye0a5")

@@ -5,12 +5,17 @@ extends Node2D
 @export var GRID_X : int
 @export var PUZZLE_GRID : Node2D
 
+@export_category("PuzzleVariables")
+@export var PUZZLE_PIECE_SPRITE : CompressedTexture2D = preload("res://icon.svg")
+@export var PUZZLE_MODULE : Color = Color.WHITE
+
+@onready var puzzle_piece_sprite: Sprite2D = %PuzzlePieceSprite
+
 # Position Variables
 var target_position : Vector2
 var position_treshold : float = 40.0
 
 # Rotation Variables
-var target_rotation : float = 0.0
 var rotation_treshold : float = 15.0
 var rotation_speed : float = 3.0
 
@@ -20,10 +25,15 @@ var drag_offset : Vector2 = Vector2.ZERO
 
 var locked : bool = false
 
+
 func _ready() -> void:
-	pass
+	puzzle_piece_sprite.texture = PUZZLE_PIECE_SPRITE
+	puzzle_piece_sprite.modulate = PUZZLE_MODULE
+	
+	
+	position_treshold = PUZZLE_GRID.GRID_SIZE / 3
+	
 	target_position = PUZZLE_GRID.piece_position_on_grid(GRID_X, GRID_Y)
-	print(target_position)
 
 
 func _unhandled_input(event: InputEvent) -> void:
@@ -42,7 +52,7 @@ func grab_and_drag(event):
 
 
 func rotate_piece(delta):
-	if not locked:
+	if not locked and is_draging:
 		if Input.is_action_pressed("rotate_clockwise"):
 			rotation += rotation_speed * delta
 		if Input.is_action_pressed("rotate_anticlockwise"):
@@ -59,12 +69,9 @@ func _process(delta: float) -> void:
 
 func check_target():
 	var rotation_modulated = fposmod(rotation_degrees, 360)
-	print(rotation_modulated)
 	if global_position.distance_to(target_position) < position_treshold:
 		if rotation_modulated < rotation_treshold or rotation_degrees > (360 - rotation_treshold):
 			rotation_degrees = 0
 			global_position = target_position
 			locked = true
 			is_draging = false
-			
-	
