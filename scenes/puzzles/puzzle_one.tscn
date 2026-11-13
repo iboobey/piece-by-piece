@@ -36,6 +36,7 @@ PUZZLE_GRID = NodePath("../../PuzzleGrid")
 PUZZLE_MODULE = Color(0.78423136, 1, 0.24344015, 1)
 
 [node name="PuzzlePiece4" parent="Pieces" unique_id=1862630047 node_paths=PackedStringArray("PUZZLE_GRID") instance=ExtResource("2_tx7lx")]
+position = Vector2(74, 70)
 GRID_Y = 5
 GRID_X = 8
 PUZZLE_GRID = NodePath("../../PuzzleGrid")
