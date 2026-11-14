@@ -11,14 +11,14 @@ extends Node2D
 @export var PUZZLE_MODULE : Color = Color.WHITE
 
 @onready var puzzle_piece_sprite: Sprite2D = %PuzzlePieceSprite
-#@onready var mouse_treshold : float = ((%PuzzlePieceSprite.texture.get_size().x + %PuzzlePieceSprite.texture.get_size().y) / 2) * 1.2
+
 
 # Position Variables
 var target_position : Vector2
 var position_treshold : float = 40.0
 
 # Rotation Variables
-var rotation_treshold : float = 15.0
+var rotation_treshold : float = 18
 var rotation_speed : float = 3.0
 
 # Drag Variables
@@ -41,6 +41,12 @@ func _ready() -> void:
 	position_treshold = PUZZLE_GRID.GRID_SIZE / 3
 	
 	target_position = PUZZLE_GRID.piece_position_on_grid(GRID_X, GRID_Y)
+
+
+func _process(delta: float) -> void:
+	rotate_piece(delta)
+	if is_dragging:
+		global_position = get_global_mouse_position() + drag_offset
 
 
 func set_texture_bitmap():
@@ -70,6 +76,7 @@ func grab_and_drag(event):
 					drag_offset = global_position - get_global_mouse_position()
 					move_to_front_z_index()
 		else:
+			snap()
 			is_dragging = false
 
 
@@ -111,14 +118,6 @@ func rotate_piece(delta):
 			rotation += rotation_speed * delta
 		if Input.is_action_pressed("rotate_anticlockwise"):
 			rotation -= rotation_speed * delta
-
-
-func _process(delta: float) -> void:
-	rotate_piece(delta)
-	if is_dragging:
-		global_position = get_global_mouse_position() + drag_offset
-	
-	snap()
 
 
 func check_target():
