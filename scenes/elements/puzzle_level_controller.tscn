@@ -1,0 +1,6 @@
+[gd_scene format=3 uid="uid://dm2eqk3o8akm3"]
+
+[ext_resource type="Script" uid="uid://jfrk4e7ey8iy" path="res://scripts/elements/puzzle_level_controller.gd" id="1_0molr"]
+
+[node name="PuzzleLevelController" type="Node" unique_id=836648399]
+script = ExtResource("1_0molr")

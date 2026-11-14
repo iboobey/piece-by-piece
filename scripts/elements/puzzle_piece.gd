@@ -4,6 +4,7 @@ extends Node2D
 @export var GRID_Y : int
 @export var GRID_X : int
 @export var PUZZLE_GRID : Node2D
+@export var LEVEL_CONTROLLER : LevelController
 
 @export_category("PuzzleVariables")
 @export var PUZZLE_PIECE_SPRITE : CompressedTexture2D = preload("res://icon.svg")
@@ -64,14 +65,40 @@ func _process(delta: float) -> void:
 	if is_draging:
 		global_position = get_global_mouse_position() + drag_offset
 	
-	check_target()
+	snap()
 
 
 func check_target():
 	var rotation_modulated = fposmod(rotation_degrees, 360)
-	if global_position.distance_to(target_position) < position_treshold:
-		if rotation_modulated < rotation_treshold or rotation_degrees > (360 - rotation_treshold):
-			rotation_degrees = 0
-			global_position = target_position
-			locked = true
-			is_draging = false
+	if not locked:
+		if global_position.distance_to(target_position) < position_treshold:
+			if rotation_modulated < rotation_treshold or rotation_degrees > (360 - rotation_treshold):
+				return true
+	else: return false
+
+
+func lock_piece():
+	rotation_degrees = 0
+	global_position = target_position
+	locked = true
+	is_draging = false
+	LEVEL_CONTROLLER.update_grid_bools(GRID_X, GRID_Y)
+
+
+func snap():
+	if check_target():
+		if is_side():
+			print("a")
+			lock_piece()
+
+
+func is_side():
+	if GRID_X == 1:
+		return true
+	if GRID_Y == 1:
+		return true
+	if GRID_X == PUZZLE_GRID.GRID_X:
+		return true
+	if GRID_Y == PUZZLE_GRID.GRID_Y:
+		return true
+	else: return false

@@ -6,6 +6,7 @@ signal grid_is_set
 @export var GRID_X : int
 @export var GRID_Y : int
 @export var GRID_SIZE : int
+@export var LEVEL_CONTROLLER : LevelController
 
 const CORNER_GHOST_PIECE = preload("res://assets/graphics/puzzlegrid/Corner_Ghost_Piece.svg")
 const GHOST_PIECE = preload("res://assets/graphics/puzzlegrid/Ghost_Piece.svg")
@@ -31,11 +32,13 @@ func set_grid():
 		grid_x_list.append(GRID_SIZE * (index + 1))
 	for index in range(GRID_Y):
 		grid_y_list.append(GRID_SIZE * (index + 1))
-	grid_is_set.emit()
+	
 	for x in GRID_X:
 		for y in GRID_Y:
-			print(x," and ",y)
 			draw_ghost_piece(x,y)
+	
+	LEVEL_CONTROLLER.set_grid_bools(GRID_X, GRID_Y)
+	grid_is_set.emit()
 
 
 func piece_position_on_grid(x,y):
