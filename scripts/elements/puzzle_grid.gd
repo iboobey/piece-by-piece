@@ -23,6 +23,8 @@ var rotation_treshold : float = 15.0
 var grid_x_list : Array = []
 var grid_y_list : Array = []
 
+
+
 func _ready() -> void:
 	set_grid()
 

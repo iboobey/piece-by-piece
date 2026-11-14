@@ -1,0 +1,51 @@
+[gd_scene format=3 uid="uid://ggx41gfvwmvl"]
+
+[ext_resource type="PackedScene" uid="uid://clpsedr3e1fja" path="res://scenes/elements/puzzle_grid.tscn" id="1_tx7lx"]
+[ext_resource type="PackedScene" uid="uid://drlo4js7facl4" path="res://scenes/elements/puzzle_piece.tscn" id="2_tx7lx"]
+[ext_resource type="PackedScene" uid="uid://dm2eqk3o8akm3" path="res://scenes/elements/puzzle_level_controller.tscn" id="2_vwkdg"]
+
+[node name="PuzzleOne" type="Node2D" unique_id=429189301]
+
+[node name="PuzzleGrid" parent="." unique_id=1270099975 node_paths=PackedStringArray("LEVEL_CONTROLLER") instance=ExtResource("1_tx7lx")]
+GRID_X = 32
+GRID_Y = 20
+GRID_SIZE = 32
+LEVEL_CONTROLLER = NodePath("../PuzzleLevelController")
+
+[node name="PuzzleLevelController" parent="." unique_id=1551109562 instance=ExtResource("2_vwkdg")]
+
+[node name="Pieces" type="Node2D" parent="." unique_id=1078004608]
+
+[node name="PuzzlePiece" parent="Pieces" unique_id=2072894686 node_paths=PackedStringArray("PUZZLE_GRID", "LEVEL_CONTROLLER") instance=ExtResource("2_tx7lx")]
+position = Vector2(217, 489)
+GRID_X = 1
+GRID_Y = 1
+PUZZLE_GRID = NodePath("../../PuzzleGrid")
+LEVEL_CONTROLLER = NodePath("../../PuzzleLevelController")
+PUZZLE_MODULE = Color(1, 0.33811414, 0.23632264, 1)
+
+[node name="PuzzlePiece2" parent="Pieces" unique_id=2030280572 node_paths=PackedStringArray("PUZZLE_GRID", "LEVEL_CONTROLLER") instance=ExtResource("2_tx7lx")]
+position = Vector2(1076, 606)
+rotation = 2.557566
+GRID_X = 1
+GRID_Y = 2
+PUZZLE_GRID = NodePath("../../PuzzleGrid")
+LEVEL_CONTROLLER = NodePath("../../PuzzleLevelController")
+PUZZLE_MODULE = Color(1, 0.3590473, 0.6107856, 1)
+
+[node name="PuzzlePiece3" parent="Pieces" unique_id=1228614711 node_paths=PackedStringArray("PUZZLE_GRID", "LEVEL_CONTROLLER") instance=ExtResource("2_tx7lx")]
+position = Vector2(153, 465)
+rotation = 0.59905493
+GRID_X = 2
+GRID_Y = 2
+PUZZLE_GRID = NodePath("../../PuzzleGrid")
+LEVEL_CONTROLLER = NodePath("../../PuzzleLevelController")
+PUZZLE_MODULE = Color(0.78423136, 1, 0.24344015, 1)
+
+[node name="PuzzlePiece4" parent="Pieces" unique_id=1862630047 node_paths=PackedStringArray("PUZZLE_GRID", "LEVEL_CONTROLLER") instance=ExtResource("2_tx7lx")]
+position = Vector2(74, 70)
+GRID_X = 2
+GRID_Y = 3
+PUZZLE_GRID = NodePath("../../PuzzleGrid")
+LEVEL_CONTROLLER = NodePath("../../PuzzleLevelController")
+PUZZLE_MODULE = Color(0.039267063, 0.33434623, 1, 1)

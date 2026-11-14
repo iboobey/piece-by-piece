@@ -11,14 +11,8 @@ func set_grid_bools(GRID_X, GRID_Y):
 		grid_x_bool.append(false)
 	for y in range(GRID_Y):
 		grid_y_bool.append(false)
-	print(grid_x_bool)
-	print(grid_y_bool)
 
 
 func update_grid_bools(GRID_X, GRID_Y):
 	grid_x_bool[GRID_X - 1] = true
 	grid_y_bool[GRID_Y - 1] = true
-	
-	print("new")
-	print(grid_x_bool)
-	print(grid_y_bool)

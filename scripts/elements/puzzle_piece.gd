@@ -1,8 +1,8 @@
 extends Node2D
 
 @export_category("GridVariables")
-@export var GRID_Y : int
 @export var GRID_X : int
+@export var GRID_Y : int
 @export var PUZZLE_GRID : Node2D
 @export var LEVEL_CONTROLLER : LevelController
 
@@ -11,6 +11,7 @@ extends Node2D
 @export var PUZZLE_MODULE : Color = Color.WHITE
 
 @onready var puzzle_piece_sprite: Sprite2D = %PuzzlePieceSprite
+#@onready var mouse_treshold : float = ((%PuzzlePieceSprite.texture.get_size().x + %PuzzlePieceSprite.texture.get_size().y) / 2) * 1.2
 
 # Position Variables
 var target_position : Vector2
@@ -21,20 +22,36 @@ var rotation_treshold : float = 15.0
 var rotation_speed : float = 3.0
 
 # Drag Variables
-var is_draging : bool = false
+var is_dragging : bool = false
 var drag_offset : Vector2 = Vector2.ZERO
+var alpha_bitmap : BitMap = null
+
+# Snap Variables
+var is_snapped : bool = false
 
 var locked : bool = false
+
 
 
 func _ready() -> void:
 	puzzle_piece_sprite.texture = PUZZLE_PIECE_SPRITE
 	puzzle_piece_sprite.modulate = PUZZLE_MODULE
-	
+	set_texture_bitmap()
 	
 	position_treshold = PUZZLE_GRID.GRID_SIZE / 3
 	
 	target_position = PUZZLE_GRID.piece_position_on_grid(GRID_X, GRID_Y)
+
+
+func set_texture_bitmap():
+	if not puzzle_piece_sprite.texture:
+		alpha_bitmap = null
+		return
+	
+	var image = puzzle_piece_sprite.texture.get_image()
+	if image:
+		alpha_bitmap = BitMap.new()
+		alpha_bitmap.create_from_image_alpha(image, 0.1)
 
 
 func _unhandled_input(event: InputEvent) -> void:
@@ -45,15 +62,51 @@ func _unhandled_input(event: InputEvent) -> void:
 func grab_and_drag(event):
 	if event is InputEventMouseButton and event.button_index == MOUSE_BUTTON_LEFT:
 		if event.pressed:
-			if global_position.distance_to(get_global_mouse_position()) < 50:
-				is_draging = true
-				drag_offset = global_position - get_global_mouse_position()
+			if is_mouse_over_opaque_pixel():
+				if obscured_by_higher_piece():
+					is_dragging = false
+				else:
+					is_dragging = true
+					drag_offset = global_position - get_global_mouse_position()
+					move_to_front_z_index()
 		else:
-			is_draging = false
+			is_dragging = false
+
+
+func obscured_by_higher_piece() -> bool:
+	
+	var children = get_parent().get_children()
+	
+	if children != null:
+		for piece in children:
+			if piece == self:
+				continue
+			elif piece.is_mouse_over_opaque_pixel() and not piece.is_snapped:
+				if piece.get_index() >= self.get_index():
+					return true
+	return false
+
+
+func is_mouse_over_opaque_pixel():
+	if not puzzle_piece_sprite.texture or alpha_bitmap == null:
+		return false
+	
+	var local_pos = puzzle_piece_sprite.get_local_mouse_position()
+	var texture_size = puzzle_piece_sprite.texture.get_size()
+	
+	if puzzle_piece_sprite.centered:
+		local_pos += texture_size / 2.0
+	
+	
+	var bitmap_size = alpha_bitmap.get_size()
+	if local_pos.x < 0 or local_pos.y < 0 or local_pos.x >= bitmap_size.x or local_pos.y >= bitmap_size.y:
+		return false
+	
+	return alpha_bitmap.get_bit(floori(local_pos.x), floori(local_pos.y))
 
 
 func rotate_piece(delta):
-	if not locked and is_draging:
+	if not locked and is_dragging:
 		if Input.is_action_pressed("rotate_clockwise"):
 			rotation += rotation_speed * delta
 		if Input.is_action_pressed("rotate_anticlockwise"):
@@ -62,7 +115,7 @@ func rotate_piece(delta):
 
 func _process(delta: float) -> void:
 	rotate_piece(delta)
-	if is_draging:
+	if is_dragging:
 		global_position = get_global_mouse_position() + drag_offset
 	
 	snap()
@@ -81,15 +134,16 @@ func lock_piece():
 	rotation_degrees = 0
 	global_position = target_position
 	locked = true
-	is_draging = false
+	is_dragging = false
 	LEVEL_CONTROLLER.update_grid_bools(GRID_X, GRID_Y)
 
 
 func snap():
 	if check_target():
-		if is_side():
-			print("a")
+		if is_side() or has_cardinal_neighbors():
+			is_snapped = true
 			lock_piece()
+			z_index = -10
 
 
 func is_side():
@@ -102,3 +156,21 @@ func is_side():
 	if GRID_Y == PUZZLE_GRID.GRID_Y:
 		return true
 	else: return false
+
+
+func has_cardinal_neighbors():
+	var has_neighbors := [
+		LEVEL_CONTROLLER.grid_x_bool[GRID_X - 2] and LEVEL_CONTROLLER.grid_y_bool[GRID_Y - 1],
+		LEVEL_CONTROLLER.grid_x_bool[GRID_X - 1] and LEVEL_CONTROLLER.grid_y_bool[GRID_Y - 2],
+		LEVEL_CONTROLLER.grid_x_bool[GRID_X] and LEVEL_CONTROLLER.grid_y_bool[GRID_Y - 1],
+		LEVEL_CONTROLLER.grid_x_bool[GRID_X - 1] and LEVEL_CONTROLLER.grid_y_bool[GRID_Y]
+	]
+	if true in has_neighbors:
+		return true
+
+
+func move_to_front_z_index():
+	var parent := get_parent()
+	
+	if parent:
+		parent.move_child(self, parent.get_child_count() - 1)
