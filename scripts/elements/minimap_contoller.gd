@@ -17,7 +17,8 @@ var map_scale : float
 # Piece Sprite Variables
 var white_texture_cache : Dictionary = {}
 
-func _process(_delta: float) -> void:
+
+func request_redraw():
 	queue_redraw()
 
 
@@ -119,7 +120,7 @@ func get_white_silhoutte(texture : Texture2D) -> Texture2D:
 	if image == null or image.is_empty():
 		return texture
 	
-	image.convert(Image.FORMAT_RGB8)
+	image.convert(Image.FORMAT_RGBA8)
 	
 	for y in range(image.get_height()):
 		for x in range(image.get_width()):

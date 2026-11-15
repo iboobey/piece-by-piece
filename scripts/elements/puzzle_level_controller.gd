@@ -31,8 +31,8 @@ func is_inside_board(cell : Vector2i):
 	return (
 		cell.x >= 0
 		and cell.y >= 0
-		and cell.x < grid_columns
-		and cell.y < grid_rows
+		and cell.x <= grid_columns
+		and cell.y <= grid_rows
 	)
 
 
@@ -40,7 +40,7 @@ func is_occupied(cell : Vector2i):
 	if not is_inside_board(cell):
 		return false
 	
-	return bool(grid_bools[cell.y][cell.x])
+	return bool(grid_bools[cell.y - 1][cell.x - 1])
 
 
 func has_cardinal_neighbors(cell : Vector2i):
@@ -65,13 +65,16 @@ func can_snap(grid_x : int, grid_y : int):
 	var cell := Vector2i(grid_x, grid_y)
 	
 	if not is_inside_board(cell):
+		print(grid_y, "i")
 		return false
 	
 	if is_occupied(cell):
+		print(grid_y, "o")
 		return false
 	
 	if not is_side(cell) and not has_cardinal_neighbors(cell):
+		print(grid_y, "n")
 		return false
 	
-	grid_bools[cell.y][cell.x] = true
+	grid_bools[cell.y - 1][cell.x - 1] = true
 	return true

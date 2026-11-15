@@ -10,8 +10,12 @@ extends Node2D
 @export var PUZZLE_PIECE_SPRITE : CompressedTexture2D = preload("res://icon.svg")
 @export var PUZZLE_MODULE : Color = Color.WHITE
 
+@export_category("MinimapVariables")
+@export var MINIMAP : CanvasLayer
+
 @onready var puzzle_piece_sprite: Sprite2D = %PuzzlePieceSprite
 
+static var alpha_bitmap_cache : Dictionary = {}
 
 # Position Variables
 var target_position : Vector2
@@ -34,6 +38,8 @@ var locked : bool = false
 
 
 func _ready() -> void:
+	set_process(false)
+	
 	puzzle_piece_sprite.texture = PUZZLE_PIECE_SPRITE
 	puzzle_piece_sprite.modulate = PUZZLE_MODULE
 	set_texture_bitmap()
@@ -47,17 +53,33 @@ func _process(delta: float) -> void:
 	rotate_piece(delta)
 	if is_dragging:
 		global_position = get_global_mouse_position() + drag_offset
+		MINIMAP.request_redraw()
 
 
 func set_texture_bitmap():
-	if not puzzle_piece_sprite.texture:
+	var texture := puzzle_piece_sprite.texture
+	if texture == null:
 		alpha_bitmap = null
 		return
 	
-	var image = puzzle_piece_sprite.texture.get_image()
-	if image:
-		alpha_bitmap = BitMap.new()
-		alpha_bitmap.create_from_image_alpha(image, 0.1)
+	var cache_key := texture.get_instance_id()
+	
+	if alpha_bitmap_cache.has(cache_key):
+		alpha_bitmap = alpha_bitmap_cache[cache_key] as BitMap
+		return
+	
+	var image := texture.get_image()
+	
+	if image == null or image.is_empty():
+		alpha_bitmap = null
+		return
+	
+	var bitmap : BitMap = BitMap.new()
+	
+	bitmap.create_from_image_alpha(image, 0.01)
+	
+	alpha_bitmap_cache[cache_key] = bitmap
+	alpha_bitmap = bitmap
 
 
 func _unhandled_input(event: InputEvent) -> void:
@@ -73,11 +95,13 @@ func grab_and_drag(event):
 					is_dragging = false
 				else:
 					is_dragging = true
+					set_process(true)
 					drag_offset = global_position - get_global_mouse_position()
 					move_to_front_z_index()
 		else:
 			snap()
 			is_dragging = false
+			set_process(false)
 
 
 func obscured_by_higher_piece() -> bool:

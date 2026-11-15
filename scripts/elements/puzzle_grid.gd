@@ -9,6 +9,7 @@ signal grid_is_set
 @export var GRID_SIZE : int
 @export var LEVEL_CONTROLLER : LevelController
 
+
 const CORNER_GHOST_PIECE = preload("res://assets/graphics/puzzlegrid/Corner_Ghost_Piece.svg")
 const GHOST_PIECE = preload("res://assets/graphics/puzzlegrid/Ghost_Piece.svg")
 

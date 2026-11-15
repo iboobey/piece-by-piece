@@ -5,11 +5,17 @@
 
 [node name="Minimap" type="CanvasLayer" unique_id=983585876]
 script = ExtResource("1_x40qs")
+padding = 0.0
 
 [node name="PanelContainer" type="PanelContainer" parent="." unique_id=912337429]
-offset_left = 898.0
-offset_right = 1280.0
-offset_bottom = 185.0
+anchors_preset = 1
+anchor_left = 1.0
+anchor_right = 1.0
+offset_left = -270.0
+offset_top = 30.0
+offset_right = -30.0
+offset_bottom = 165.0
+grow_horizontal = 0
 
 [node name="MinimapControl" type="Control" parent="PanelContainer" unique_id=545719250]
 layout_mode = 2
