@@ -1,0 +1,17 @@
+[gd_scene format=3 uid="uid://b8svjfheqdwus"]
+
+[ext_resource type="Script" uid="uid://5duanyt0dwx4" path="res://scripts/elements/minimap.gd" id="1_x40qs"]
+[ext_resource type="Script" uid="uid://cyhgtp7rpfdpd" path="res://scripts/elements/minimap_contoller.gd" id="2_u77s1"]
+
+[node name="Minimap" type="CanvasLayer" unique_id=983585876]
+script = ExtResource("1_x40qs")
+
+[node name="PanelContainer" type="PanelContainer" parent="." unique_id=912337429]
+offset_left = 898.0
+offset_right = 1280.0
+offset_bottom = 185.0
+
+[node name="MinimapControl" type="Control" parent="PanelContainer" unique_id=545719250]
+layout_mode = 2
+mouse_filter = 2
+script = ExtResource("2_u77s1")
