@@ -12,12 +12,13 @@ GRID_Y = 20
 GRID_SIZE = 32
 LEVEL_CONTROLLER = NodePath("../PuzzleLevelController")
 
-[node name="PuzzleLevelController" parent="." unique_id=1551109562 instance=ExtResource("2_vwkdg")]
+[node name="PuzzleLevelController" parent="." unique_id=1551109562 node_paths=PackedStringArray("PUZZLE_GRID") instance=ExtResource("2_vwkdg")]
+PUZZLE_GRID = NodePath("../PuzzleGrid")
 
 [node name="Pieces" type="Node2D" parent="." unique_id=1078004608]
 
 [node name="PuzzlePiece" parent="Pieces" unique_id=2072894686 node_paths=PackedStringArray("PUZZLE_GRID", "LEVEL_CONTROLLER") instance=ExtResource("2_tx7lx")]
-position = Vector2(217, 489)
+position = Vector2(219, 507)
 GRID_X = 1
 GRID_Y = 1
 PUZZLE_GRID = NodePath("../../PuzzleGrid")

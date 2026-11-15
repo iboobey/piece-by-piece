@@ -124,7 +124,7 @@ func check_target():
 	var rotation_modulated = fposmod(rotation_degrees, 360)
 	if not locked:
 		if global_position.distance_to(target_position) < position_treshold:
-			if rotation_modulated < rotation_treshold or rotation_degrees > (360 - rotation_treshold):
+			if rotation_modulated < rotation_treshold or rotation_modulated > (360 - rotation_treshold):
 				return true
 	else: return false
 
@@ -134,38 +134,14 @@ func lock_piece():
 	global_position = target_position
 	locked = true
 	is_dragging = false
-	LEVEL_CONTROLLER.update_grid_bools(GRID_X, GRID_Y)
 
 
 func snap():
 	if check_target():
-		if is_side() or has_cardinal_neighbors():
+		if LEVEL_CONTROLLER.can_snap(GRID_X, GRID_Y):
 			is_snapped = true
 			lock_piece()
 			z_index = -10
-
-
-func is_side():
-	if GRID_X == 1:
-		return true
-	if GRID_Y == 1:
-		return true
-	if GRID_X == PUZZLE_GRID.GRID_X:
-		return true
-	if GRID_Y == PUZZLE_GRID.GRID_Y:
-		return true
-	else: return false
-
-
-func has_cardinal_neighbors():
-	var has_neighbors := [
-		LEVEL_CONTROLLER.grid_x_bool[GRID_X - 2] and LEVEL_CONTROLLER.grid_y_bool[GRID_Y - 1],
-		LEVEL_CONTROLLER.grid_x_bool[GRID_X - 1] and LEVEL_CONTROLLER.grid_y_bool[GRID_Y - 2],
-		LEVEL_CONTROLLER.grid_x_bool[GRID_X] and LEVEL_CONTROLLER.grid_y_bool[GRID_Y - 1],
-		LEVEL_CONTROLLER.grid_x_bool[GRID_X - 1] and LEVEL_CONTROLLER.grid_y_bool[GRID_Y]
-	]
-	if true in has_neighbors:
-		return true
 
 
 func move_to_front_z_index():
