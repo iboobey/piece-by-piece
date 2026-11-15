@@ -3,6 +3,7 @@
 [ext_resource type="PackedScene" uid="uid://clpsedr3e1fja" path="res://scenes/elements/puzzle_grid.tscn" id="1_tx7lx"]
 [ext_resource type="PackedScene" uid="uid://drlo4js7facl4" path="res://scenes/elements/puzzle_piece.tscn" id="2_tx7lx"]
 [ext_resource type="PackedScene" uid="uid://dm2eqk3o8akm3" path="res://scenes/elements/puzzle_level_controller.tscn" id="2_vwkdg"]
+[ext_resource type="Script" uid="uid://yosundi42qmy" path="res://scripts/elements/camera.gd" id="4_namvk"]
 
 [node name="PuzzleOne" type="Node2D" unique_id=429189301]
 
@@ -50,3 +51,12 @@ GRID_Y = 3
 PUZZLE_GRID = NodePath("../../PuzzleGrid")
 LEVEL_CONTROLLER = NodePath("../../PuzzleLevelController")
 PUZZLE_MODULE = Color(0.039267063, 0.33434623, 1, 1)
+
+[node name="Camera2D" type="Camera2D" parent="." unique_id=51699908]
+limit_left = 0
+limit_top = 0
+limit_right = 1280
+limit_bottom = 720
+limit_smoothed = true
+position_smoothing_speed = 12.0
+script = ExtResource("4_namvk")

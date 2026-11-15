@@ -1,3 +1,4 @@
+class_name PuzzleGrid
 extends Node2D
 
 signal grid_is_set

@@ -137,6 +137,9 @@ func lock_piece():
 
 
 func snap():
+	if not is_dragging:
+		return
+	
 	if check_target():
 		if LEVEL_CONTROLLER.can_snap(GRID_X, GRID_Y):
 			is_snapped = true
