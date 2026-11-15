@@ -14,6 +14,8 @@ var map_rect : Rect2
 var map_origin : Vector2
 var map_scale : float
 
+# Piece Sprite Variables
+var white_texture_cache : Dictionary = {}
 
 func _process(_delta: float) -> void:
 	queue_redraw()
@@ -59,11 +61,12 @@ func _draw() -> void:
 		if not (piece is Node2D):
 			continue
 		
+		var piece_sprite := piece.get_node_or_null("PuzzlePieceSprite") as Sprite2D
 		
-		var map_position := world_to_map(piece.global_position)
+		if piece_sprite == null or piece_sprite.texture == null:
+			continue
 		
-		if map_rect.has_point(map_position):
-			draw_circle(map_position, piece_dot_radius, piece.modulate)
+		draw_piece_texture(piece_sprite)
 	
 	var world_view_size := get_viewport_rect().size / board_camera.zoom
 	var view_center := board_camera.get_screen_center_position()
@@ -75,4 +78,55 @@ func _draw() -> void:
 	
 	if visible_camera_rect.size.x > 0.0 and visible_camera_rect.size.y > 0.0:
 		draw_rect(visible_camera_rect, Color(1.0, 0.85, 0.2), false, 2.0)
+
+
+func draw_piece_texture(sprite : Sprite2D):
+	var map_position := world_to_map(sprite.global_position)
 	
+	if not map_rect.has_point(map_position):
+		return
+	
+	var texture_size := Vector2(sprite.texture.get_size())
+	var texture_origin := sprite.offset
+	
+	if sprite.centered:
+		texture_origin -= texture_size / 2
+	
+	var minimap_scale := sprite.global_scale * map_scale
+	
+	if sprite.flip_h:
+		minimap_scale.x *= -1
+	
+	if sprite.flip_v:
+		minimap_scale.y *= -1
+	
+	draw_set_transform(map_position, sprite.global_rotation, minimap_scale)
+	
+	var silhoutte := get_white_silhoutte(sprite.texture)
+	draw_texture(silhoutte, texture_origin, Color.WHITE)
+	
+	draw_set_transform(Vector2.ZERO, 0, Vector2.ONE)
+
+
+func get_white_silhoutte(texture : Texture2D) -> Texture2D:
+	var texture_id := texture.get_instance_id()
+	
+	if white_texture_cache.has(texture_id):
+		return white_texture_cache[texture_id] as Texture2D
+	
+	var image := texture.get_image()
+	
+	if image == null or image.is_empty():
+		return texture
+	
+	image.convert(Image.FORMAT_RGB8)
+	
+	for y in range(image.get_height()):
+		for x in range(image.get_width()):
+			var original_pixel := image.get_pixel(x, y)
+			
+			image.set_pixel(x, y, Color(1.0, 1.0, 1.0, original_pixel.a))
+	
+	var silhoutte := ImageTexture.create_from_image(image)
+	white_texture_cache[texture_id] = silhoutte
+	return silhoutte
