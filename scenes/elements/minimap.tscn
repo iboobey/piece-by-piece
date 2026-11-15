@@ -1,7 +1,13 @@
 [gd_scene format=3 uid="uid://b8svjfheqdwus"]
 
 [ext_resource type="Script" uid="uid://5duanyt0dwx4" path="res://scripts/elements/minimap.gd" id="1_x40qs"]
+[ext_resource type="Shader" uid="uid://biwippi861fkp" path="res://shaders/minimap_silhouette.gdshader" id="2_irnqt"]
 [ext_resource type="Script" uid="uid://cyhgtp7rpfdpd" path="res://scripts/elements/minimap_contoller.gd" id="2_u77s1"]
+[ext_resource type="Script" uid="uid://cv532tpnp0hcv" path="res://scripts/elements/minimap_pieces.gd" id="4_xxcnu"]
+[ext_resource type="Script" uid="uid://drfd8q86dqn2n" path="res://scripts/elements/camera_overlay.gd" id="5_8fu1w"]
+
+[sub_resource type="ShaderMaterial" id="ShaderMaterial_rx551"]
+shader = ExtResource("2_irnqt")
 
 [node name="Minimap" type="CanvasLayer" unique_id=983585876]
 script = ExtResource("1_x40qs")
@@ -21,3 +27,18 @@ grow_horizontal = 0
 layout_mode = 2
 mouse_filter = 2
 script = ExtResource("2_u77s1")
+
+[node name="MinimapPieces" type="Control" parent="PanelContainer/MinimapControl" unique_id=197437313]
+unique_name_in_owner = true
+material = SubResource("ShaderMaterial_rx551")
+anchors_preset = 0
+offset_right = 40.0
+offset_bottom = 40.0
+script = ExtResource("4_xxcnu")
+
+[node name="CameraOverlay" type="Control" parent="PanelContainer/MinimapControl" unique_id=617806531]
+unique_name_in_owner = true
+anchors_preset = 0
+offset_right = 40.0
+offset_bottom = 40.0
+script = ExtResource("5_8fu1w")

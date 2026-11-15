@@ -58,27 +58,8 @@ func _draw() -> void:
 	draw_rect(map_rect, Color(0.12, 0.12, 0.12, 0.9), true)
 	draw_rect(map_rect, Color(0.75, 0.75, 0.75), false, 1)
 	
-	for piece in pieces_root.get_children():
-		if not (piece is Node2D):
-			continue
-		
-		var piece_sprite := piece.get_node_or_null("PuzzlePieceSprite") as Sprite2D
-		
-		if piece_sprite == null or piece_sprite.texture == null:
-			continue
-		
-		draw_piece_texture(piece_sprite)
-	
-	var world_view_size := get_viewport_rect().size / board_camera.zoom
-	var view_center := board_camera.get_screen_center_position()
-	var view_top_left_corner := view_center - world_view_size / 2
-	
-	var camera_map_rect := Rect2(world_to_map(view_top_left_corner), world_view_size * map_scale)
-	
-	var visible_camera_rect := camera_map_rect.intersection(map_rect)
-	
-	if visible_camera_rect.size.x > 0.0 and visible_camera_rect.size.y > 0.0:
-		draw_rect(visible_camera_rect, Color(1.0, 0.85, 0.2), false, 2.0)
+	%MinimapPieces.queue_redraw()
+	%CameraOverlay.queue_redraw()
 
 
 func draw_piece_texture(sprite : Sprite2D):
@@ -103,13 +84,12 @@ func draw_piece_texture(sprite : Sprite2D):
 	
 	draw_set_transform(map_position, sprite.global_rotation, minimap_scale)
 	
-	var silhoutte := get_white_silhoutte(sprite.texture)
-	draw_texture(silhoutte, texture_origin, Color.WHITE)
+	draw_texture(sprite.texture, texture_origin, Color.WHITE)
 	
 	draw_set_transform(Vector2.ZERO, 0, Vector2.ONE)
 
 
-func get_white_silhoutte(texture : Texture2D) -> Texture2D:
+func get_white_silhouette(texture : Texture2D) -> Texture2D:
 	var texture_id := texture.get_instance_id()
 	
 	if white_texture_cache.has(texture_id):
@@ -128,6 +108,6 @@ func get_white_silhoutte(texture : Texture2D) -> Texture2D:
 			
 			image.set_pixel(x, y, Color(1.0, 1.0, 1.0, original_pixel.a))
 	
-	var silhoutte := ImageTexture.create_from_image(image)
-	white_texture_cache[texture_id] = silhoutte
-	return silhoutte
+	var silhouette := ImageTexture.create_from_image(image)
+	white_texture_cache[texture_id] = silhouette
+	return silhouette

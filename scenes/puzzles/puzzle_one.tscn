@@ -107,7 +107,7 @@ LEVEL_CONTROLLER = NodePath("../../PuzzleLevelController")
 PUZZLE_MODULE = Color(0.03205681, 1, 0.6516162, 1)
 MINIMAP = NodePath("../../Minimap")
 
-[node name="Camera2D" type="Camera2D" parent="." unique_id=51699908]
+[node name="Camera2D" type="Camera2D" parent="." unique_id=51699908 node_paths=PackedStringArray("MINIMAP")]
 limit_left = 0
 limit_top = 0
 limit_right = 1280
@@ -115,6 +115,7 @@ limit_bottom = 720
 limit_smoothed = true
 position_smoothing_speed = 12.0
 script = ExtResource("4_namvk")
+MINIMAP = NodePath("../Minimap")
 
 [node name="Minimap" parent="." unique_id=983585876 node_paths=PackedStringArray("pieces_root", "board_camera") instance=ExtResource("5_ysy1r")]
 pieces_root = NodePath("../PiecesRoot")

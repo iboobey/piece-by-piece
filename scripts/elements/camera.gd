@@ -1,16 +1,21 @@
 extends Camera2D
 
-@export_category("Movement Variables")
+@export_category("MovementVariables")
 @export var PAN_SPEED : float = 1.0 
 @export var ZOOM_AMOUNT : float = 0.05
 @export var MAX_ZOOM : float = 3
 @export var MIN_ZOOM : float = 1
+
+@export_category("MinimapVariables")
+@export var MINIMAP : CanvasLayer
 
 
 func _input(event: InputEvent) -> void:
 	if event is InputEventMouseMotion and Input.is_action_pressed("pan"):
 		global_position -= event.relative * PAN_SPEED / zoom
 		clampt_to_limits()
+		MINIMAP.request_redraw()
+		
 	zoom_camera(event)
 
 
@@ -61,7 +66,7 @@ func zoom_camera(event: InputEvent):
 	target_zoom = clampf(target_zoom, MIN_ZOOM, MAX_ZOOM)
 	zoom_to_cursor(target_zoom)
 	get_viewport().set_input_as_handled()
-	
+	MINIMAP.request_redraw()
 
 
 func zoom_to_cursor(target_zoom : float):
