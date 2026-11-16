@@ -8,6 +8,7 @@
 
 [sub_resource type="ShaderMaterial" id="ShaderMaterial_rx551"]
 shader = ExtResource("2_irnqt")
+shader_parameter/silhouette_color = Color(1, 1, 1, 1)
 
 [node name="Minimap" type="CanvasLayer" unique_id=983585876]
 script = ExtResource("1_x40qs")

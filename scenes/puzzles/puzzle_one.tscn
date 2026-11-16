@@ -120,3 +120,4 @@ MINIMAP = NodePath("../Minimap")
 [node name="Minimap" parent="." unique_id=983585876 node_paths=PackedStringArray("pieces_root", "board_camera") instance=ExtResource("5_ysy1r")]
 pieces_root = NodePath("../PiecesRoot")
 board_camera = NodePath("../Camera2D")
+MINIMAP_PIECE_COLOR = Color(0.9390966, 1, 0.73299986, 1)

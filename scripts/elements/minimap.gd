@@ -10,6 +10,7 @@ extends CanvasLayer
 @export var padding : float = 8.0
 
 @export var USE_AVERAGE_COLOR : bool = false
+@export var MINIMAP_PIECE_COLOR : Color = Color.WHITE
 
 @onready var minimap_control: MinimapController = $PanelContainer/MinimapControl
 

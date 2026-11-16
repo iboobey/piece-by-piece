@@ -3,6 +3,9 @@ extends Control
 @onready var minimap: MinimapController = get_parent() as MinimapController
 
 @onready var use_average_color = $"../../..".USE_AVERAGE_COLOR
+@onready var minimap_piece_color = $"../../..".MINIMAP_PIECE_COLOR
+
+
 
 static var average_color_cache : Dictionary = {}
 
@@ -40,8 +43,11 @@ func _draw() -> void:
 		
 		draw_set_transform(map_position, sprite.global_rotation, draw_scale)
 		
-		var piece_color: Color = piece.get("PUZZLE_MODULE")
-		draw_texture(sprite.texture, texture_origin, piece_color)
+		var shader_material := material as ShaderMaterial
+		
+		shader_material.set_shader_parameter("silhouette_color", minimap_piece_color)
+		
+		draw_texture(sprite.texture, texture_origin, sprite.modulate)
 		
 		draw_set_transform(Vector2.ZERO, 0.0, Vector2.ONE)
 
