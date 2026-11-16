@@ -1,6 +1,0 @@
-[gd_scene format=3 uid="uid://bkn5kgadqqpo4"]
-
-[ext_resource type="Script" uid="uid://cq2amsfhaebli" path="res://scripts/elements/group_manager.gd" id="1_bm5ot"]
-
-[node name="GroupManager" type="Node" unique_id=1068312558]
-script = ExtResource("1_bm5ot")

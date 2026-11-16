@@ -1,6 +1,13 @@
 extends Node2D
 class_name PuzzlePiece
 
+
+@onready var puzzle_piece_sprite: Sprite2D = %PuzzlePieceSprite
+
+@onready var board_min : Vector2 = Vector2(get_viewport_rect().position.x, get_viewport_rect().position.y)
+@onready var board_max : Vector2 = board_min + Vector2(get_viewport_rect().size.x, get_viewport_rect().size.y)
+
+
 @export_category("GridVariables")
 @export var GRID_X : int
 @export var GRID_Y : int
@@ -15,15 +22,8 @@ class_name PuzzlePiece
 @export var MINIMAP : CanvasLayer
 @export var PUZZLE_COLOR : Color = Color.WHITE
 
-@export_category("PieceGroups")
-@export var GROUP_MANAGER : GroupManager
+@onready var GROUP_MANAGER = get_parent()
 
-
-
-@onready var puzzle_piece_sprite: Sprite2D = %PuzzlePieceSprite
-
-@onready var board_min : Vector2 = Vector2(get_viewport_rect().position.x, get_viewport_rect().position.y)
-@onready var board_max : Vector2 = board_min + Vector2(get_viewport_rect().size.x, get_viewport_rect().size.y)
 
 static var alpha_bitmap_cache : Dictionary = {}
 
@@ -47,7 +47,6 @@ var locked : bool = false
 # Group Variables
 var is_selected : bool = false
 var drag_members : Array = []
-
 
 
 
@@ -133,10 +132,13 @@ func grab_and_drag(event):
 			if not is_dragging:
 				return
 			
+			
+			
 			var did_snap = snap()
 			is_dragging = false
 			drag_members.clear()
 			set_process(false)
+			GROUP_MANAGER.try_snapping_to_a_group(self)
 			
 			if did_snap:
 				GROUP_MANAGER.remove_piece_from_group(self)
