@@ -1,4 +1,5 @@
 extends Node2D
+class_name PuzzlePiece
 
 @export_category("GridVariables")
 @export var GRID_X : int
@@ -14,8 +15,15 @@ extends Node2D
 @export var MINIMAP : CanvasLayer
 @export var PUZZLE_COLOR : Color = Color.WHITE
 
+@export_category("PieceGroups")
+@export var GROUP_MANAGER : GroupManager
+
+
 
 @onready var puzzle_piece_sprite: Sprite2D = %PuzzlePieceSprite
+
+@onready var board_min : Vector2 = Vector2(get_viewport_rect().position.x, get_viewport_rect().position.y)
+@onready var board_max : Vector2 = board_min + Vector2(get_viewport_rect().size.x, get_viewport_rect().size.y)
 
 static var alpha_bitmap_cache : Dictionary = {}
 
@@ -34,8 +42,12 @@ var alpha_bitmap : BitMap = null
 
 # Snap Variables
 var is_snapped : bool = false
-
 var locked : bool = false
+
+# Group Variables
+var is_selected : bool = false
+var drag_members : Array = []
+
 
 
 
@@ -54,7 +66,15 @@ func _ready() -> void:
 func _process(delta: float) -> void:
 	rotate_piece(delta)
 	if is_dragging:
-		global_position = get_global_mouse_position() + drag_offset
+		
+		var desired_position := get_global_mouse_position() + drag_offset
+		var movement := clamp_to_border(desired_position)
+		
+		for member in drag_members:
+			if is_instance_valid(member):
+				member.global_position = movement
+		
+		
 		MINIMAP.request_redraw()
 
 
@@ -96,14 +116,32 @@ func grab_and_drag(event):
 				if obscured_by_higher_piece():
 					is_dragging = false
 				else:
+					
+					if Input.is_action_pressed("select_piece"):
+						GROUP_MANAGER.toggle_selection(self)
+						get_viewport().set_input_as_handled()
+						return
+					
 					is_dragging = true
-					set_process(true)
+					drag_members = GROUP_MANAGER.get_drag_members(self)
 					drag_offset = global_position - get_global_mouse_position()
 					move_to_front_z_index()
+					get_viewport().set_input_as_handled()
+					set_process(true)
 		else:
-			snap()
+			
+			if not is_dragging:
+				return
+			
+			var did_snap = snap()
 			is_dragging = false
+			drag_members.clear()
 			set_process(false)
+			
+			if did_snap:
+				GROUP_MANAGER.remove_piece_from_group(self)
+			
+			get_viewport().set_input_as_handled()
 
 
 func obscured_by_higher_piece() -> bool:
@@ -162,15 +200,20 @@ func lock_piece():
 	is_dragging = false
 
 
-func snap():
+func snap() -> bool:
 	if not is_dragging:
-		return
+		return false
 	
-	if check_target():
-		if LEVEL_CONTROLLER.can_snap(GRID_X, GRID_Y):
-			is_snapped = true
-			lock_piece()
-			z_index = -10
+	if not check_target():
+		return false
+	
+	if not LEVEL_CONTROLLER.can_snap(GRID_X, GRID_Y):
+		return false
+	
+	is_snapped = true
+	lock_piece()
+	z_index = -30333
+	return true
 
 
 func move_to_front_z_index():
@@ -178,3 +221,9 @@ func move_to_front_z_index():
 	
 	if parent:
 		parent.move_child(self, parent.get_child_count() - 1)
+
+
+func clamp_to_border(pos : Vector2) -> Vector2:
+	return Vector2(
+		clampf(pos.x, board_min.x, board_max.x),
+		clampf(pos.y, board_min.y, board_max.y))
