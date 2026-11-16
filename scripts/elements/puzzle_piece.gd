@@ -12,6 +12,8 @@ extends Node2D
 
 @export_category("MinimapVariables")
 @export var MINIMAP : CanvasLayer
+@export var PUZZLE_COLOR : Color = Color.WHITE
+
 
 @onready var puzzle_piece_sprite: Sprite2D = %PuzzlePieceSprite
 

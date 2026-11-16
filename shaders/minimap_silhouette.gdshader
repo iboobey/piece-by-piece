@@ -1,6 +1,6 @@
 shader_type canvas_item;
 
 void fragment() {
-	vec4 texel = texture(TEXTURE, UV);
-	COLOR = vec4(vec3(1.0), COLOR.a * texel.a);
+	float texture_alpha = texture(TEXTURE, UV).a;
+	COLOR = vec4(COLOR.rgb, COLOR.a * texture_alpha);
 }

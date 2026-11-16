@@ -8,7 +8,7 @@ class_name MinimapController
 @onready var board_camera : Camera2D = $"../..".board_camera
 @onready var board_bounds : Rect2 = $"../..".board_bounds
 @onready var padding : float = $"../..".padding
-@onready var piece_dot_radius : float = $"../..".piece_dot_radius
+
 
 var map_rect : Rect2
 var map_origin : Vector2

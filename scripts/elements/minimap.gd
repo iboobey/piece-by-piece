@@ -8,7 +8,8 @@ extends CanvasLayer
 	Vector2(1280,720))
 
 @export var padding : float = 8.0
-@export var piece_dot_radius : float = 3.0
+
+@export var USE_AVERAGE_COLOR : bool = false
 
 @onready var minimap_control: MinimapController = $PanelContainer/MinimapControl
 
