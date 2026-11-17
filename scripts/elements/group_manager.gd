@@ -64,12 +64,11 @@ func remove_piece_from_group(piece : PuzzlePiece):
 
 
 func get_drag_members(piece : PuzzlePiece):
-	var piece_id := piece.get_instance_id()
+	var members: Array = groups_by_piece.get(piece.get_instance_id(), [])
+	if members.is_empty():
+		return [piece]
 	
-	if groups_by_piece.has(piece_id):
-		return groups_by_piece[piece_id]
-	
-	return [piece]
+	return members.duplicate()
 
 
 func ungroup_selected():
@@ -155,6 +154,7 @@ func try_snapping_to_a_group(main_piece : PuzzlePiece):
 				member.global_position += position_delta
 			
 			merge_pieces(main_piece,piece)
+			break
 
 
 func check_piece_closeness(main_piece : PuzzlePiece, piece : PuzzlePiece) -> Array:

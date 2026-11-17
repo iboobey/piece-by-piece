@@ -65,16 +65,68 @@ func can_snap(grid_x : int, grid_y : int):
 	var cell := Vector2i(grid_x, grid_y)
 	
 	if not is_inside_board(cell):
-		print(grid_y, "i")
 		return false
 	
 	if is_occupied(cell):
-		print(grid_y, "o")
 		return false
 	
 	if not is_side(cell) and not has_cardinal_neighbors(cell):
-		print(grid_y, "n")
 		return false
 	
 	grid_bools[cell.y - 1][cell.x - 1] = true
+	return true
+
+
+func try_snap_group(members : Array):
+	if members.is_empty():
+		return false
+	
+	var planned_pieces : Array[PuzzlePiece] = []
+	var planned_cells : Dictionary = {}
+	
+	for candidate in members:
+		if not is_instance_valid(candidate) or not(candidate is PuzzlePiece):
+			return false
+		
+		var piece := candidate as PuzzlePiece
+		
+		if piece.locked or piece.is_snapped:
+			return false
+		
+		var cell := Vector2i(piece.GRID_X,piece.GRID_Y) 
+		
+		if not is_inside_board(cell):
+			return false
+		
+		if is_occupied(cell):
+			return false
+		
+		if planned_cells.has(cell):
+			return false
+		
+		if not piece.check_target():
+			return false
+		
+		
+		planned_cells[cell] = true
+		planned_pieces.append(piece)
+	
+	var has_board_connection := false
+	
+	for cell in planned_cells:
+		if is_side(cell) or has_cardinal_neighbors(cell):
+			has_board_connection = true
+			break
+	
+	if not has_board_connection:
+		return false
+	
+	
+	for piece in planned_pieces:
+		var cell := Vector2(piece.GRID_X, piece.GRID_Y)
+		grid_bools[cell.y - 1][cell.x - 1] = true
+		piece.is_snapped = true
+		piece.lock_piece()
+		piece.z_index = -4096
+	
 	return true

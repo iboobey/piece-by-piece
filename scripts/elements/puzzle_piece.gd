@@ -63,7 +63,6 @@ func _ready() -> void:
 
 
 func _process(delta: float) -> void:
-	rotate_piece(delta)
 	if is_dragging:
 		
 		var desired_position := get_global_mouse_position() + drag_offset
@@ -75,6 +74,7 @@ func _process(delta: float) -> void:
 		
 		
 		MINIMAP.request_redraw()
+	rotate_piece(delta)
 
 
 func set_texture_bitmap():
@@ -116,10 +116,7 @@ func grab_and_drag(event):
 					is_dragging = false
 				else:
 					
-					if Input.is_action_pressed("select_piece"):
-						GROUP_MANAGER.toggle_selection(self)
-						get_viewport().set_input_as_handled()
-						return
+					
 					
 					is_dragging = true
 					drag_members = GROUP_MANAGER.get_drag_members(self)
@@ -132,16 +129,17 @@ func grab_and_drag(event):
 			if not is_dragging:
 				return
 			
+			var members_to_snap : Array = drag_members.duplicate()
 			
+			if members_to_snap.is_empty():
+				members_to_snap = [self]
 			
-			var did_snap = snap()
+			var did_snap = snap(members_to_snap)
 			
 			is_dragging = false
 			set_process(false)
 			
-			if did_snap:
-				GROUP_MANAGER.remove_piece_from_group(self)
-			else:
+			if not did_snap:
 				GROUP_MANAGER.try_snapping_to_a_group(self)
 			
 			drag_members.clear()
@@ -183,10 +181,8 @@ func is_mouse_over_opaque_pixel():
 func rotate_piece(delta):
 	if not locked and is_dragging:
 		if Input.is_action_pressed("rotate_clockwise"):
-			print("Clockwise input; speed: ", rotation_speed)
 			rotate_dragged_group(rotation_speed, delta)
 		elif Input.is_action_pressed("rotate_anticlockwise"):
-			print("Anticlockwise input; speed: ", rotation_speed)
 			rotate_dragged_group(-rotation_speed, delta)
 
 
@@ -206,20 +202,13 @@ func lock_piece():
 	is_dragging = false
 
 
-func snap() -> bool:
+func snap(members_to_snap : Array) -> bool:
 	if not is_dragging:
 		return false
 	
-	if not check_target():
-		return false
 	
-	if not LEVEL_CONTROLLER.can_snap(GRID_X, GRID_Y):
-		return false
 	
-	is_snapped = true
-	lock_piece()
-	z_index = -4096
-	return true
+	return LEVEL_CONTROLLER.try_snap_group(members_to_snap)
 
 
 func move_to_front_z_index():
@@ -236,10 +225,13 @@ func clamp_to_border(pos : Vector2) -> Vector2:
 
 
 func rotate_dragged_group(angle_degrees : float, delta):
-	var members : Array = drag_members
+	var members : Array = GROUP_MANAGER.get_drag_members(self)
 	
 	if members.is_empty():
-		members = GROUP_MANAGER.get_drag_members(self)
+		members = [self]
+	
+	
+	drag_members = members
 	
 	var valid_members : Array[PuzzlePiece] = []
 	
@@ -263,6 +255,7 @@ func rotate_dragged_group(angle_degrees : float, delta):
 	for member in valid_members:
 		group_center += member.global_position
 	
+	
 	group_center /= float(valid_members.size())
 	
 	
@@ -275,3 +268,6 @@ func rotate_dragged_group(angle_degrees : float, delta):
 		
 		member.global_position = group_center + offset.rotated(angle_step_radians)
 		member.global_rotation_degrees += angle_step_degrees
+	
+	if is_dragging:
+		drag_offset = global_position - get_global_mouse_position()
