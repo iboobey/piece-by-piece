@@ -9,7 +9,9 @@ class_name MinimapController
 @onready var board_bounds : Rect2 = $"../..".board_bounds
 @onready var padding : float = $"../..".padding
 
+var minimap_dragging := false
 
+# Map Variables
 var map_rect : Rect2
 var map_origin : Vector2
 var map_scale : float
@@ -17,6 +19,11 @@ var map_scale : float
 # Piece Sprite Variables
 var white_texture_cache : Dictionary = {}
 
+
+
+func _ready() -> void:
+	if board_camera and not board_camera.camera_view_changed.is_connected(on_camera_view_changed):
+		board_camera.camera_view_changed.connect(on_camera_view_changed)
 
 func request_redraw():
 	queue_redraw()
@@ -111,3 +118,44 @@ func get_white_silhouette(texture : Texture2D) -> Texture2D:
 	var silhouette := ImageTexture.create_from_image(image)
 	white_texture_cache[texture_id] = silhouette
 	return silhouette
+
+
+func move_camera_to_minimap_point(point : Vector2):
+	if board_camera == null or map_scale <= 0.0:
+		return
+	
+	var map_point := Vector2(clampf(point.x, map_rect.position.x, map_rect.end.x), clampf(point.y, map_rect.position.y, map_rect.end.y))
+	
+	var world_point := board_bounds.position + (map_point - map_origin) / map_scale
+	
+	board_camera.navigate_to_world(world_point)
+
+
+func _input(event: InputEvent) -> void:
+	if not minimap_dragging:
+		return
+	
+	if event is InputEventMouseMotion:
+		move_camera_to_minimap_point(get_local_mouse_position())
+		get_viewport().set_input_as_handled()
+	
+	elif event is InputEventMouseButton and event.button_index == MOUSE_BUTTON_LEFT:
+		if not event.pressed:
+			minimap_dragging = false
+			get_viewport().set_input_as_handled()
+
+
+func _gui_input(event: InputEvent) -> void:
+	if event is InputEventMouseButton and event.button_index == MOUSE_BUTTON_LEFT:
+		if event.pressed:
+			
+			if not map_rect.has_point(event.position):
+				return
+			
+			minimap_dragging = true
+			move_camera_to_minimap_point(event.position)
+			accept_event()
+
+
+func on_camera_view_changed():
+	queue_redraw()

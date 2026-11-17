@@ -15,8 +15,9 @@ GRID_Y = 9
 GRID_SIZE = 32
 LEVEL_CONTROLLER = NodePath("../PuzzleLevelController")
 
-[node name="PuzzleLevelController" parent="." unique_id=1551109562 node_paths=PackedStringArray("PUZZLE_GRID") instance=ExtResource("2_vwkdg")]
+[node name="PuzzleLevelController" parent="." unique_id=1551109562 node_paths=PackedStringArray("PUZZLE_GRID", "MINIMAP") instance=ExtResource("2_vwkdg")]
 PUZZLE_GRID = NodePath("../PuzzleGrid")
+MINIMAP = NodePath("../Minimap")
 
 [node name="PiecesRoot" type="Node2D" parent="." unique_id=1078004608 node_paths=PackedStringArray("PUZZLE_GRID")]
 script = ExtResource("3_fr8f0")

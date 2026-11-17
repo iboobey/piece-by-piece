@@ -2,6 +2,8 @@ class_name LevelController
 extends Node
 
 @export var PUZZLE_GRID : Node2D
+@export var MINIMAP : CanvasLayer
+
 
 var grid_x_bool : Array = []
 var grid_y_bool : Array = []
@@ -130,5 +132,7 @@ func try_snap_group(members : Array):
 		piece.is_snapped = true
 		piece.lock_piece()
 		piece.z_index = -4096
+	
+	MINIMAP.request_redraw()
 	
 	return true

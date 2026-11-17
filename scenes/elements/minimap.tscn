@@ -26,7 +26,6 @@ grow_horizontal = 0
 
 [node name="MinimapControl" type="Control" parent="PanelContainer" unique_id=545719250]
 layout_mode = 2
-mouse_filter = 2
 script = ExtResource("2_u77s1")
 
 [node name="MinimapPieces" type="Control" parent="PanelContainer/MinimapControl" unique_id=197437313]
