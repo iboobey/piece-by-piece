@@ -33,7 +33,7 @@ var position_treshold : float = 40.0
 
 # Rotation Variables
 var rotation_treshold : float = 18
-var rotation_speed : float = 3.0
+var rotation_speed : float = 160.0
 
 # Drag Variables
 var is_dragging : bool = false
@@ -183,9 +183,11 @@ func is_mouse_over_opaque_pixel():
 func rotate_piece(delta):
 	if not locked and is_dragging:
 		if Input.is_action_pressed("rotate_clockwise"):
-			rotation += rotation_speed * delta
-		if Input.is_action_pressed("rotate_anticlockwise"):
-			rotation -= rotation_speed * delta
+			print("Clockwise input; speed: ", rotation_speed)
+			rotate_dragged_group(rotation_speed, delta)
+		elif Input.is_action_pressed("rotate_anticlockwise"):
+			print("Anticlockwise input; speed: ", rotation_speed)
+			rotate_dragged_group(-rotation_speed, delta)
 
 
 func check_target():
@@ -231,3 +233,45 @@ func clamp_to_border(pos : Vector2) -> Vector2:
 	return Vector2(
 		clampf(pos.x, board_min.x, board_max.x),
 		clampf(pos.y, board_min.y, board_max.y))
+
+
+func rotate_dragged_group(angle_degrees : float, delta):
+	var members : Array = drag_members
+	
+	if members.is_empty():
+		members = GROUP_MANAGER.get_drag_members(self)
+	
+	var valid_members : Array[PuzzlePiece] = []
+	
+	for candidate_member in members:
+		
+		if not is_instance_valid(candidate_member):
+			continue
+		if not (candidate_member is PuzzlePiece):
+			continue
+		
+		var member := candidate_member as PuzzlePiece
+		
+		if not valid_members.has(member):
+			valid_members.append(member)
+	
+	if valid_members.is_empty():
+		valid_members.append(self)
+	
+	var group_center := Vector2.ZERO
+	
+	for member in valid_members:
+		group_center += member.global_position
+	
+	group_center /= float(valid_members.size())
+	
+	
+	var angle_step_degrees = angle_degrees * delta
+	var angle_step_radians := deg_to_rad(angle_step_degrees)
+	
+	
+	for member in valid_members:
+		var offset := member.global_position - group_center
+		
+		member.global_position = group_center + offset.rotated(angle_step_radians)
+		member.global_rotation_degrees += angle_step_degrees

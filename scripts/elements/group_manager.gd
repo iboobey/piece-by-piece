@@ -133,13 +133,31 @@ func merge_pieces(piece_a : PuzzlePiece, piece_b : PuzzlePiece):
 
 func try_snapping_to_a_group(main_piece : PuzzlePiece):
 	for piece in eligible_sibling_for_grouping(main_piece):
-		if check_piece_rotation(main_piece, piece) and check_piece_closeness(main_piece, piece)[0]:
-			piece.global_rotation = main_piece.global_rotation
-			piece.global_position = main_piece.global_position + check_piece_closeness(main_piece, piece)[1]
-			merge_pieces(main_piece, piece)
+		var can_snap : Array = check_piece_closeness(main_piece, piece)
+		if check_piece_rotation(main_piece, piece) and can_snap[0]:
+			var moving_members : Array = get_drag_members(piece)
+			
+			if moving_members.has(main_piece):
+				continue
+			
+			var target_pos = main_piece.global_position + can_snap[1]
+			var pivot = piece.global_position
+			
+			var rotation_delta := wrapf(main_piece.global_rotation - piece.global_rotation, -PI, PI)
+			
+			for member in moving_members:
+				member.global_position = pivot + (member.global_position - pivot).rotated(rotation_delta)
+				member.global_rotation += rotation_delta 
+			
+			var position_delta = target_pos - piece.global_position
+			
+			for member in moving_members:
+				member.global_position += position_delta
+			
+			merge_pieces(main_piece,piece)
 
 
-func check_piece_closeness(main_piece : PuzzlePiece, piece : PuzzlePiece):
+func check_piece_closeness(main_piece : PuzzlePiece, piece : PuzzlePiece) -> Array:
 	
 	var piece_grid_target : Vector2 = Vector2(piece.GRID_X, piece.GRID_Y)
 	var main_piece_grid_target : Vector2 = Vector2(main_piece.GRID_X, main_piece.GRID_Y)
@@ -154,7 +172,7 @@ func check_piece_closeness(main_piece : PuzzlePiece, piece : PuzzlePiece):
 	var piece_target_direction : Vector2 = directions.get(true, Vector2.ZERO)
 	
 	if piece_target_direction == Vector2.ZERO:
-		return [false]
+		return [false, Vector2.ZERO]
 	
 	var excepted_offset := (piece_target_direction * float(PUZZLE_GRID.GRID_SIZE)).rotated(main_piece.global_rotation)
 	
