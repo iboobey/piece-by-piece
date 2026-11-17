@@ -96,9 +96,11 @@ func try_snap_group(members : Array):
 		var cell := Vector2i(piece.GRID_X,piece.GRID_Y) 
 		
 		if not is_inside_board(cell):
+			print("i")
 			return false
 		
 		if is_occupied(cell):
+			print("c")
 			return false
 		
 		if planned_cells.has(cell):
@@ -123,7 +125,7 @@ func try_snap_group(members : Array):
 	
 	
 	for piece in planned_pieces:
-		var cell := Vector2(piece.GRID_X, piece.GRID_Y)
+		var cell := Vector2i(piece.GRID_X, piece.GRID_Y)
 		grid_bools[cell.y - 1][cell.x - 1] = true
 		piece.is_snapped = true
 		piece.lock_piece()

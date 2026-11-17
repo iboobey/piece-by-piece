@@ -32,6 +32,7 @@ var target_position : Vector2
 var position_treshold : float = 40.0
 
 # Rotation Variables
+var target_rotation : float = 0.0
 var rotation_treshold : float = 18
 var rotation_speed : float = 160.0
 
@@ -168,6 +169,7 @@ func grab_and_drag(event):
 		if members_to_snap.is_empty():
 			members_to_snap = [self]
 		
+		LEVEL_CONTROLLER.try_snap_group(members_to_snap)
 		
 		is_dragging = false
 		set_process(false)
@@ -219,12 +221,19 @@ func rotate_piece(delta):
 
 
 func check_target():
-	var rotation_modulated = fposmod(rotation_degrees, 360)
-	if not locked:
-		if global_position.distance_to(target_position) < position_treshold:
-			if rotation_modulated < rotation_treshold or rotation_modulated > (360 - rotation_treshold):
-				return true
-	else: return false
+	var target_pos : Vector2 = PUZZLE_GRID.piece_position_on_grid(GRID_X, GRID_Y)
+	
+	var position_error := global_position.distance_to(target_pos)
+	
+	if position_error > position_treshold:
+		return false
+	
+	var rotation_error := absf(wrapf(global_rotation - target_rotation, -180, 180))
+	
+	if rotation_error > rotation_treshold:
+		return false
+	
+	return true
 
 
 func lock_piece():
