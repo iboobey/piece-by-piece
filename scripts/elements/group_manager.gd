@@ -211,3 +211,51 @@ func eligible_sibling_for_grouping(main_piece : PuzzlePiece):
 		eligible_list.append(piece)
 	
 	return eligible_list 
+
+
+func clamp_group_to_bounds(members : Array):
+	var valid_members : Array[PuzzlePiece] = []
+	
+	for candidate in members: 
+		if not is_instance_valid(candidate) or not(candidate is PuzzlePiece):
+			continue
+		
+		var piece := candidate as PuzzlePiece
+		if not valid_members.has(piece):
+			valid_members.append(piece)
+	
+	if valid_members.is_empty():
+		return
+	
+	var min_x = INF
+	var min_y = INF
+	var max_x = -INF
+	var max_y = -INF
+	
+	for piece in valid_members:
+		min_x = minf(min_x, piece.global_position.x)
+		min_y = minf(min_y, piece.global_position.y)
+		max_x = maxf(max_x, piece.global_position.x)
+		max_y = maxf(max_y, piece.global_position.y)
+	
+	var bounding_min : Vector2 = get_viewport_rect().position
+	var bounding_max : Vector2 = bounding_min + get_viewport_rect().size
+	
+	
+	var correction_offset := Vector2(
+		get_axis_correction_offset(min_x, max_x, bounding_min.x, bounding_max.x),
+		get_axis_correction_offset(min_y, max_y, bounding_min.y, bounding_max.y)
+	)
+	
+	for piece in valid_members:
+		piece.global_position += correction_offset
+
+
+func get_axis_correction_offset(group_min : float, group_max : float, bound_min : float, bound_max : float):
+	var min_delta := bound_min - group_min
+	var max_delta := bound_max - group_max
+	
+	if min_delta < max_delta:
+		return clampf(0.0, min_delta, max_delta)
+	
+	return clampf((bound_min + bound_max) / 2 - (group_min + group_max) / 2, bound_min, bound_max)

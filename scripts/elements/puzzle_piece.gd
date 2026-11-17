@@ -63,18 +63,23 @@ func _ready() -> void:
 
 
 func _process(delta: float) -> void:
-	if is_dragging:
-		
-		var desired_position := get_global_mouse_position() + drag_offset
-		var movement := desired_position - global_position
-		
-		for member in drag_members:
-			if is_instance_valid(member):
-				member.global_position = clamp_to_border(member.global_position + movement)
-		
-		
-		MINIMAP.request_redraw()
+	if not is_dragging:
+		return
+	
+	var members : Array = drag_members
+	if members.is_empty():
+		members = [self]
+	
+	var desired_position := get_global_mouse_position() + drag_offset
+	var movement := desired_position - global_position
+	
+	for member in members:
+		if is_instance_valid(member):
+			member.global_position = member.global_position + movement
+	
 	rotate_piece(delta)
+	GROUP_MANAGER.clamp_group_to_bounds(drag_members)
+	MINIMAP.request_redraw()
 
 
 func set_texture_bitmap():
@@ -205,8 +210,6 @@ func lock_piece():
 func snap(members_to_snap : Array) -> bool:
 	if not is_dragging:
 		return false
-	
-	
 	
 	return LEVEL_CONTROLLER.try_snap_group(members_to_snap)
 
