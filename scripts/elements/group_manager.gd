@@ -12,15 +12,16 @@ var groups_by_piece : Dictionary = {}
 
 
 func toggle_selection(piece : PuzzlePiece):
-	if bool(piece.get("locked")):
+	if not is_instance_valid(piece):
+		return
+	
+	if piece.locked or piece.is_snapped:
 		return
 	
 	if selected_pieces.has(piece):
 		selected_pieces.erase(piece)
-		piece.set("is_selected", false)
 	else:
 		selected_pieces.append(piece)
-		piece.set("is_selected", true)
 
 
 func create_group_from_selection():
@@ -71,11 +72,41 @@ func get_drag_members(piece : PuzzlePiece):
 	return members.duplicate()
 
 
-func ungroup_selected():
-	for piece in selected_pieces.duplicate():
-		remove_piece_from_group(piece)
-		piece.set("is_selected", false)
+func ungroup_piece(piece : PuzzlePiece):
+	if not is_instance_valid(piece):
+		return false
 	
+	var piece_id := piece.get_instance_id()
+	if not groups_by_piece.has(piece_id):
+		return false
+	
+	var group : Array = groups_by_piece[piece_id]
+	
+	if not group.has(piece):
+		groups_by_piece.erase(piece_id)
+		return false
+	
+	group.erase(piece)
+	groups_by_piece.erase(piece_id)
+	
+	if group.size() <= 1:
+		groups.erase(group)
+		
+		for remaining_piece in group:
+			if is_instance_valid(remaining_piece):
+				groups_by_piece.erase(remaining_piece.get_instance_id())
+	else:
+		for remaining_piece in group:
+			if is_instance_valid(remaining_piece):
+				groups_by_piece[remaining_piece.get_instance_id()] = group
+	
+	return true
+
+
+func ungroup_selected_pieces():
+	for piece in selected_pieces:
+		if is_instance_valid(piece):
+			ungroup_piece(piece)
 	selected_pieces.clear()
 
 
@@ -120,24 +151,34 @@ func merge_pieces(piece_a : PuzzlePiece, piece_b : PuzzlePiece):
 	groups.erase(group_b)
 
 
-#func _unhandled_key_input(event: In]putEvent) -> void:
-	#if event.is_action_pressed("create_piece_group"):
-		#create_group_from_selection()
-		#get_viewport().set_input_as_handled()
-	#
-	#elif event.is_action_pressed("ungroup_selected"):
-		#ungroup_selected()
-		#get_viewport().set_input_as_handled()
+func _unhandled_input(event: InputEvent) -> void:
+	group_input(event)
+	ungroup_input(event)
+	clear_selection(event)
 
 
-func try_snapping_to_a_group(main_piece : PuzzlePiece):
-	for piece in eligible_sibling_for_grouping(main_piece):
+func try_snapping_to_a_group(main_piece : PuzzlePiece, selected_candidates: Array = []):
+	
+	var candidates : Array
+	
+	if selected_candidates.is_empty():
+		candidates = eligible_sibling_for_grouping(main_piece)
+	else:
+		candidates = []
+		for candidate in eligible_sibling_for_grouping(main_piece):
+			if selected_candidates.has(candidate):
+				candidates.append(candidate)
+	
+	for piece in candidates:
+		if piece == main_piece:
+			continue
+			
 		var can_snap : Array = check_piece_closeness(main_piece, piece)
 		if check_piece_rotation(main_piece, piece) and can_snap[0]:
 			var moving_members : Array = get_drag_members(piece)
 			
 			if moving_members.has(main_piece):
-				continue
+				return
 			
 			var target_pos = main_piece.global_position + can_snap[1]
 			var pivot = piece.global_position
@@ -145,16 +186,17 @@ func try_snapping_to_a_group(main_piece : PuzzlePiece):
 			var rotation_delta := wrapf(main_piece.global_rotation - piece.global_rotation, -PI, PI)
 			
 			for member in moving_members:
-				member.global_position = pivot + (member.global_position - pivot).rotated(rotation_delta)
-				member.global_rotation += rotation_delta 
+				if member is PuzzlePiece:
+					member.global_position = pivot + (member.global_position - pivot).rotated(rotation_delta)
+					member.global_rotation += rotation_delta 
 			
 			var position_delta = target_pos - piece.global_position
 			
 			for member in moving_members:
-				member.global_position += position_delta
+				if member is PuzzlePiece:
+					member.global_position += position_delta
 			
 			merge_pieces(main_piece,piece)
-			break
 
 
 func check_piece_closeness(main_piece : PuzzlePiece, piece : PuzzlePiece) -> Array:
@@ -259,3 +301,42 @@ func get_axis_correction_offset(group_min : float, group_max : float, bound_min 
 		return clampf(0.0, min_delta, max_delta)
 	
 	return clampf((bound_min + bound_max) / 2 - (group_min + group_max) / 2, bound_min, bound_max)
+
+
+func ungroup_input(event : InputEvent):
+	if event.is_action_pressed("ungroup_selected") and not event.is_echo():
+		
+		ungroup_selected_pieces()
+		selected_pieces.clear()
+		get_viewport().set_input_as_handled()
+		return
+
+
+func group_input(event : InputEvent):
+	if not event.is_action_pressed("group_selected") or event.is_echo():
+		return
+	
+	var selected := selected_pieces.duplicate()
+	
+	if selected_pieces.size() <= 1:
+		return
+	
+	var merged_this_pass := true
+	
+	while merged_this_pass:
+		merged_this_pass = false
+		
+		for main_piece in selected:
+			if not is_instance_valid(main_piece):
+				continue
+			if try_snapping_to_a_group(main_piece, selected):
+				merged_this_pass = true
+	
+	selected_pieces.clear()
+	get_viewport().set_input_as_handled()
+	return
+
+
+func clear_selection(event : InputEvent):
+	if event.is_action_pressed("delete_seletion") and not event.is_echo():
+		selected_pieces.clear()

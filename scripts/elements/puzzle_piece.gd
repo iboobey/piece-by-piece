@@ -66,9 +66,20 @@ func _process(delta: float) -> void:
 	if not is_dragging:
 		return
 	
-	var members : Array = drag_members
-	if members.is_empty():
-		members = [self]
+	var members : Array[PuzzlePiece] = []
+	
+	for candidate in drag_members:
+		if not is_instance_valid(candidate):
+			continue
+		if not (candidate is PuzzlePiece):
+			continue
+		
+		var member := candidate as PuzzlePiece
+		if not members.has(member):
+			members.append(member)
+	
+	if not members.has(self):
+		members.append(self)
 	
 	var desired_position := get_global_mouse_position() + drag_offset
 	var movement := desired_position - global_position
@@ -111,44 +122,60 @@ func set_texture_bitmap():
 func _unhandled_input(event: InputEvent) -> void:
 	if not locked:
 		grab_and_drag(event)
+	
+	if event is InputEventMouseButton and event.button_index == MOUSE_BUTTON_LEFT:
+		if event.is_action_pressed("select_piece"):
+			GROUP_MANAGER.toggle_selection(self)
+			get_viewport().set_input_as_handled()
 
 
 func grab_and_drag(event):
-	if event is InputEventMouseButton and event.button_index == MOUSE_BUTTON_LEFT:
-		if event.pressed:
-			if is_mouse_over_opaque_pixel():
-				if obscured_by_higher_piece():
-					is_dragging = false
-				else:
-					
-					
-					
-					is_dragging = true
-					drag_members = GROUP_MANAGER.get_drag_members(self)
-					drag_offset = global_position - get_global_mouse_position()
-					move_to_front_z_index()
-					get_viewport().set_input_as_handled()
-					set_process(true)
-		else:
+	if not (event is InputEventMouseButton):
+		return
+		 
+	if event.button_index != MOUSE_BUTTON_LEFT:
+		return
+		
+	if event.pressed:
+		
+		if not is_mouse_over_opaque_pixel():
+			return
 			
-			if not is_dragging:
-				return
-			
-			var members_to_snap : Array = drag_members.duplicate()
-			
-			if members_to_snap.is_empty():
-				members_to_snap = [self]
-			
-			var did_snap = snap(members_to_snap)
-			
+		if obscured_by_higher_piece():
 			is_dragging = false
-			set_process(false)
-			
-			if not did_snap:
-				GROUP_MANAGER.try_snapping_to_a_group(self)
-			
-			drag_members.clear()
+			return
+		
+		if Input.is_action_pressed("select_piece"):
+			GROUP_MANAGER.toggle_selection(self)
 			get_viewport().set_input_as_handled()
+			return
+		
+		
+		is_dragging = true
+		drag_members = GROUP_MANAGER.get_drag_members(self)
+		drag_offset = global_position - get_global_mouse_position()
+		move_to_front_z_index()
+		get_viewport().set_input_as_handled()
+		set_process(true)
+		
+	else:
+		
+		if not is_dragging:
+			return
+		
+		var members_to_snap : Array = drag_members.duplicate()
+		
+		if members_to_snap.is_empty():
+			members_to_snap = [self]
+		
+		
+		is_dragging = false
+		set_process(false)
+		
+		
+		
+		drag_members.clear()
+		get_viewport().set_input_as_handled()
 
 
 func obscured_by_higher_piece() -> bool:
