@@ -32,7 +32,7 @@ PUZZLE_MODULE = Color(1, 0.33811414, 0.23632264, 1)
 MINIMAP = NodePath("../../Minimap")
 
 [node name="PuzzlePiece2" parent="PiecesRoot" unique_id=2030280572 node_paths=PackedStringArray("PUZZLE_GRID", "LEVEL_CONTROLLER", "MINIMAP") instance=ExtResource("2_tx7lx")]
-position = Vector2(119, 37)
+position = Vector2(34.000004, 96)
 rotation = 2.557566
 GRID_X = 1
 GRID_Y = 2
@@ -42,10 +42,10 @@ PUZZLE_MODULE = Color(1, 0.3590473, 0.6107856, 1)
 MINIMAP = NodePath("../../Minimap")
 
 [node name="PuzzlePiece3" parent="PiecesRoot" unique_id=1228614711 node_paths=PackedStringArray("PUZZLE_GRID", "LEVEL_CONTROLLER", "MINIMAP") instance=ExtResource("2_tx7lx")]
-position = Vector2(24, 96.99994)
+position = Vector2(134.00002, 25.999977)
 rotation = 0.59905493
-GRID_X = 1
-GRID_Y = 3
+GRID_X = 2
+GRID_Y = 1
 PUZZLE_GRID = NodePath("../../PuzzleGrid")
 LEVEL_CONTROLLER = NodePath("../../PuzzleLevelController")
 PUZZLE_MODULE = Color(0.78423136, 1, 0.24344015, 1)
@@ -53,8 +53,8 @@ MINIMAP = NodePath("../../Minimap")
 
 [node name="PuzzlePiece4" parent="PiecesRoot" unique_id=1862630047 node_paths=PackedStringArray("PUZZLE_GRID", "LEVEL_CONTROLLER", "MINIMAP") instance=ExtResource("2_tx7lx")]
 position = Vector2(106, 107)
-GRID_X = 1
-GRID_Y = 4
+GRID_X = 2
+GRID_Y = 2
 PUZZLE_GRID = NodePath("../../PuzzleGrid")
 LEVEL_CONTROLLER = NodePath("../../PuzzleLevelController")
 PUZZLE_MODULE = Color(0.9504478, 1, 0.5075571, 1)

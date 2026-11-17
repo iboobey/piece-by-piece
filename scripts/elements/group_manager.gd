@@ -80,14 +80,55 @@ func ungroup_selected():
 	selected_pieces.clear()
 
 
-func _unhandled_key_input(event: InputEvent) -> void:
-	if event.is_action_pressed("create_piece_group"):
-		create_group_from_selection()
-		get_viewport().set_input_as_handled()
+func merge_pieces(piece_a : PuzzlePiece, piece_b : PuzzlePiece):
+	if not is_instance_valid(piece_a) or not is_instance_valid(piece_b):
+		return
 	
-	elif event.is_action_pressed("ungroup_selected"):
-		ungroup_selected()
-		get_viewport().set_input_as_handled()
+	if piece_a == piece_b:
+		return
+	
+	var key_a := piece_a.get_instance_id()
+	var key_b := piece_b.get_instance_id()
+	
+	var group_a : Array = groups_by_piece.get(key_a, [])
+	var group_b : Array = groups_by_piece.get(key_b, [])
+	
+	if group_a.is_empty() and group_b.is_empty():
+		var new_group : Array[PuzzlePiece] = [piece_a, piece_b]
+		groups.append(new_group)
+		groups_by_piece[key_a] = new_group
+		groups_by_piece[key_b] = new_group
+		return
+	
+	if group_b.is_empty():
+		group_a.append(piece_b)
+		groups_by_piece[key_b] = group_a
+		return
+	
+	if group_a.is_empty():
+		group_b.append(piece_a)
+		groups_by_piece[key_a] = group_b
+		return
+	
+	if group_a.has(piece_b):
+		return
+	
+	for member in group_b:
+		if not group_a.has(member):
+			group_a.append(member)
+		groups_by_piece[member.get_instance_id()] = group_a
+	
+	groups.erase(group_b)
+
+
+#func _unhandled_key_input(event: In]putEvent) -> void:
+	#if event.is_action_pressed("create_piece_group"):
+		#create_group_from_selection()
+		#get_viewport().set_input_as_handled()
+	#
+	#elif event.is_action_pressed("ungroup_selected"):
+		#ungroup_selected()
+		#get_viewport().set_input_as_handled()
 
 
 func try_snapping_to_a_group(main_piece : PuzzlePiece):
@@ -95,7 +136,7 @@ func try_snapping_to_a_group(main_piece : PuzzlePiece):
 		if check_piece_rotation(main_piece, piece) and check_piece_closeness(main_piece, piece)[0]:
 			piece.global_rotation = main_piece.global_rotation
 			piece.global_position = main_piece.global_position + check_piece_closeness(main_piece, piece)[1]
-			print("yes")
+			merge_pieces(main_piece, piece)
 
 
 func check_piece_closeness(main_piece : PuzzlePiece, piece : PuzzlePiece):

@@ -67,11 +67,11 @@ func _process(delta: float) -> void:
 	if is_dragging:
 		
 		var desired_position := get_global_mouse_position() + drag_offset
-		var movement := clamp_to_border(desired_position)
+		var movement := desired_position - global_position
 		
 		for member in drag_members:
 			if is_instance_valid(member):
-				member.global_position = movement
+				member.global_position = clamp_to_border(member.global_position + movement)
 		
 		
 		MINIMAP.request_redraw()
@@ -135,14 +135,16 @@ func grab_and_drag(event):
 			
 			
 			var did_snap = snap()
+			
 			is_dragging = false
-			drag_members.clear()
 			set_process(false)
-			GROUP_MANAGER.try_snapping_to_a_group(self)
 			
 			if did_snap:
 				GROUP_MANAGER.remove_piece_from_group(self)
+			else:
+				GROUP_MANAGER.try_snapping_to_a_group(self)
 			
+			drag_members.clear()
 			get_viewport().set_input_as_handled()
 
 
@@ -214,7 +216,7 @@ func snap() -> bool:
 	
 	is_snapped = true
 	lock_piece()
-	z_index = -30333
+	z_index = -4096
 	return true
 
 
