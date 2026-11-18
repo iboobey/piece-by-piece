@@ -137,11 +137,10 @@ func _input(event: InputEvent) -> void:
 	
 	if event is InputEventMouseMotion:
 		move_camera_to_minimap_point(get_local_mouse_position())
-		get_viewport().set_input_as_handled()
-	
 	elif event is InputEventMouseButton and event.button_index == MOUSE_BUTTON_LEFT:
 		if not event.pressed:
 			minimap_dragging = false
+			UndoHistory.commit_action()
 			get_viewport().set_input_as_handled()
 
 
@@ -151,6 +150,9 @@ func _gui_input(event: InputEvent) -> void:
 			
 			if not map_rect.has_point(event.position):
 				return
+			
+			board_camera.finish_pending_camera_history()
+			UndoHistory.begin_action("Navigate camera from minimap")
 			
 			minimap_dragging = true
 			move_camera_to_minimap_point(event.position)

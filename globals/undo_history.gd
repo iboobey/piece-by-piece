@@ -32,17 +32,14 @@ func configure(
 
 func begin_action(label : String):
 	if not before_action.is_empty():
-		print("Undohistory : action already open")
 		return
 	
 	action_label = label
 	before_action = capture_state()
-	print("Undohistory : began", label)
 
 
 func commit_action():
 	if before_action.is_empty():
-		print("Undohistory : no action to commit")
 		return
 	
 	var after_state := capture_state()
@@ -59,7 +56,6 @@ func commit_action():
 	redo_stack.clear()
 	before_action = {}
 	action_label = ""
-	print("Undohistory: commited; undo entries :", undo_stack.size())
 
 
 func cancel_action():
@@ -99,7 +95,7 @@ func capture_state() -> Dictionary:
 
 
 func restore_state(state : Dictionary):
-	
+	push_warning("Restore called")
 	for piece_state in state["pieces"]:
 		
 		var piece : PuzzlePiece = piece_state["piece"]
@@ -134,40 +130,35 @@ func restore_state(state : Dictionary):
 		
 		level_controller.grid_bools = state["grid_bools"].duplicate(true)
 		
-		board_camera.set("target_position", state["camera_target_position"])
-		board_camera.set("target_rotation", state["camera_target_zoom"])
+		
+	board_camera.set("target_position", state["camera_target_position"])
+	board_camera.set("target_zoom", state["camera_target_zoom"])
 
 
 func undo():
 	if undo_stack.is_empty() or not before_action.is_empty():
-		print("Undohistory : undo requested; entries:", undo_stack.size())
 		return
 	
 	var action : Dictionary = undo_stack.pop_back()
 	
 	restore_state(action["before"])
 	redo_stack.append(action)
-	print("Undohsitory: restored before-state")
 
 
 func redo():
 	if redo_stack.is_empty() or not before_action.is_empty():
-		print("Undohistory: redo requested; entries:", redo_stack.size())
 		return
 	
 	var action : Dictionary = redo_stack.pop_back()
 	
 	restore_state(action["after"])
 	undo_stack.append(action)
-	print("Undohistory: restored after-state")
 
 
 func _unhandled_input(event: InputEvent) -> void:
 	if event.is_action_pressed("undo") and not event.is_echo():
 		undo()
-		print("undo")
 		get_viewport().set_input_as_handled()
 	if event.is_action_pressed("redo") and not event.is_echo():
 		redo()
-		print("redo")
 		get_viewport().set_input_as_handled()
