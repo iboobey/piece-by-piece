@@ -152,6 +152,8 @@ func grab_and_drag(event):
 			return
 		
 		
+		print("DRAG BEGIN: ", name, " id=", get_instance_id())
+		UndoHistory.begin_action("Move, rotate, or snap pieces")
 		is_dragging = true
 		drag_members = GROUP_MANAGER.get_drag_members(self)
 		drag_offset = global_position - get_global_mouse_position()
@@ -175,7 +177,8 @@ func grab_and_drag(event):
 		set_process(false)
 		
 		
-		
+		print("DRAG RELEASE: ", name, " id=", get_instance_id())
+		UndoHistory.commit_action()
 		drag_members.clear()
 		get_viewport().set_input_as_handled()
 

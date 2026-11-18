@@ -60,13 +60,13 @@ func _input(event: InputEvent) -> void:
 	zoom_camera(event)
 
 
-func clamp_camera_position(position : Vector2, zoom_value : Vector2):
+func clamp_camera_position(pos : Vector2, zoom_value : Vector2):
 	var half_view := get_viewport_rect().size / zoom_value / 2
 	
-	position.x = clamp_axis(position.x, limit_left, limit_right, half_view.x)
-	position.y = clamp_axis(position.y, limit_top, limit_bottom, half_view.y)
+	pos.x = clamp_axis(pos.x, limit_left, limit_right, half_view.x)
+	pos.y = clamp_axis(pos.y, limit_top, limit_bottom, half_view.y)
 	
-	return position
+	return pos
 
 
 func clamp_axis(value : float, world_min : float, world_max : float, half_view : float):

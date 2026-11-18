@@ -16,7 +16,7 @@ config/icon="res://icon.svg"
 
 [autoload]
 
-GlobalPuzzleGrid="*uid://cvt2sgtxhvb14"
+UndoHistory="*uid://qvk8qhgvp1pe"
 
 [display]
 

@@ -1,25 +1,30 @@
 [gd_scene format=3 uid="uid://ggx41gfvwmvl"]
 
+[ext_resource type="Script" uid="uid://c0lwen062oiko" path="res://scripts/puzzles/puzzle_one.gd" id="1_fvrem"]
 [ext_resource type="PackedScene" uid="uid://clpsedr3e1fja" path="res://scenes/elements/puzzle_grid.tscn" id="1_tx7lx"]
 [ext_resource type="PackedScene" uid="uid://drlo4js7facl4" path="res://scenes/elements/puzzle_piece.tscn" id="2_tx7lx"]
-[ext_resource type="PackedScene" uid="uid://dm2eqk3o8akm3" path="res://scenes/elements/puzzle_level_controller.tscn" id="2_vwkdg"]
+[ext_resource type="PackedScene" uid="uid://dm2eqk3o8akm3" path="res://scenes/elements/level_controller.tscn" id="2_vwkdg"]
 [ext_resource type="Script" uid="uid://cq2amsfhaebli" path="res://scripts/elements/group_manager.gd" id="3_fr8f0"]
 [ext_resource type="Script" uid="uid://yosundi42qmy" path="res://scripts/elements/camera.gd" id="4_namvk"]
 [ext_resource type="PackedScene" uid="uid://b8svjfheqdwus" path="res://scenes/elements/minimap.tscn" id="5_ysy1r"]
 
 [node name="PuzzleOne" type="Node2D" unique_id=429189301]
+script = ExtResource("1_fvrem")
 
 [node name="PuzzleGrid" parent="." unique_id=1270099975 node_paths=PackedStringArray("LEVEL_CONTROLLER") instance=ExtResource("1_tx7lx")]
+unique_name_in_owner = true
 GRID_X = 32
 GRID_Y = 9
 GRID_SIZE = 32
-LEVEL_CONTROLLER = NodePath("../PuzzleLevelController")
+LEVEL_CONTROLLER = NodePath("../LevelController")
 
-[node name="PuzzleLevelController" parent="." unique_id=1551109562 node_paths=PackedStringArray("PUZZLE_GRID", "MINIMAP") instance=ExtResource("2_vwkdg")]
+[node name="LevelController" parent="." unique_id=1551109562 node_paths=PackedStringArray("PUZZLE_GRID", "MINIMAP") instance=ExtResource("2_vwkdg")]
+unique_name_in_owner = true
 PUZZLE_GRID = NodePath("../PuzzleGrid")
 MINIMAP = NodePath("../Minimap")
 
 [node name="PiecesRoot" type="Node2D" parent="." unique_id=1078004608 node_paths=PackedStringArray("PUZZLE_GRID")]
+unique_name_in_owner = true
 script = ExtResource("3_fr8f0")
 PUZZLE_GRID = NodePath("../PuzzleGrid")
 
@@ -28,7 +33,7 @@ position = Vector2(39, 36)
 GRID_X = 1
 GRID_Y = 1
 PUZZLE_GRID = NodePath("../../PuzzleGrid")
-LEVEL_CONTROLLER = NodePath("../../PuzzleLevelController")
+LEVEL_CONTROLLER = NodePath("../../LevelController")
 PUZZLE_MODULE = Color(1, 0.33811414, 0.23632264, 1)
 MINIMAP = NodePath("../../Minimap")
 
@@ -38,7 +43,7 @@ rotation = 2.557566
 GRID_X = 1
 GRID_Y = 2
 PUZZLE_GRID = NodePath("../../PuzzleGrid")
-LEVEL_CONTROLLER = NodePath("../../PuzzleLevelController")
+LEVEL_CONTROLLER = NodePath("../../LevelController")
 PUZZLE_MODULE = Color(1, 0.3590473, 0.6107856, 1)
 MINIMAP = NodePath("../../Minimap")
 
@@ -48,7 +53,7 @@ rotation = 0.59905493
 GRID_X = 1
 GRID_Y = 3
 PUZZLE_GRID = NodePath("../../PuzzleGrid")
-LEVEL_CONTROLLER = NodePath("../../PuzzleLevelController")
+LEVEL_CONTROLLER = NodePath("../../LevelController")
 PUZZLE_MODULE = Color(0.78423136, 1, 0.24344015, 1)
 MINIMAP = NodePath("../../Minimap")
 
@@ -57,7 +62,7 @@ position = Vector2(106, 107)
 GRID_X = 2
 GRID_Y = 1
 PUZZLE_GRID = NodePath("../../PuzzleGrid")
-LEVEL_CONTROLLER = NodePath("../../PuzzleLevelController")
+LEVEL_CONTROLLER = NodePath("../../LevelController")
 PUZZLE_MODULE = Color(0.9504478, 1, 0.5075571, 1)
 MINIMAP = NodePath("../../Minimap")
 
@@ -67,7 +72,7 @@ rotation = 0.7054496
 GRID_X = 2
 GRID_Y = 2
 PUZZLE_GRID = NodePath("../../PuzzleGrid")
-LEVEL_CONTROLLER = NodePath("../../PuzzleLevelController")
+LEVEL_CONTROLLER = NodePath("../../LevelController")
 PUZZLE_MODULE = Color(0.5978302, 1, 0.47373664, 1)
 MINIMAP = NodePath("../../Minimap")
 
@@ -77,7 +82,7 @@ rotation = 0.40938783
 GRID_X = 2
 GRID_Y = 3
 PUZZLE_GRID = NodePath("../../PuzzleGrid")
-LEVEL_CONTROLLER = NodePath("../../PuzzleLevelController")
+LEVEL_CONTROLLER = NodePath("../../LevelController")
 PUZZLE_MODULE = Color(1, 0.486789, 0.47485125, 1)
 MINIMAP = NodePath("../../Minimap")
 
@@ -87,7 +92,7 @@ rotation = 1.5845603
 GRID_X = 3
 GRID_Y = 1
 PUZZLE_GRID = NodePath("../../PuzzleGrid")
-LEVEL_CONTROLLER = NodePath("../../PuzzleLevelController")
+LEVEL_CONTROLLER = NodePath("../../LevelController")
 PUZZLE_MODULE = Color(0.6050606, 0, 1, 1)
 MINIMAP = NodePath("../../Minimap")
 
@@ -97,7 +102,7 @@ rotation = -0.82693714
 GRID_X = 3
 GRID_Y = 2
 PUZZLE_GRID = NodePath("../../PuzzleGrid")
-LEVEL_CONTROLLER = NodePath("../../PuzzleLevelController")
+LEVEL_CONTROLLER = NodePath("../../LevelController")
 PUZZLE_MODULE = Color(1, 0.2722674, 0, 1)
 MINIMAP = NodePath("../../Minimap")
 
@@ -107,11 +112,12 @@ rotation = -0.20078355
 GRID_X = 3
 GRID_Y = 3
 PUZZLE_GRID = NodePath("../../PuzzleGrid")
-LEVEL_CONTROLLER = NodePath("../../PuzzleLevelController")
+LEVEL_CONTROLLER = NodePath("../../LevelController")
 PUZZLE_MODULE = Color(0.03205681, 1, 0.6516162, 1)
 MINIMAP = NodePath("../../Minimap")
 
-[node name="Camera2D" type="Camera2D" parent="." unique_id=51699908 node_paths=PackedStringArray("MINIMAP")]
+[node name="BoardCamera" type="Camera2D" parent="." unique_id=51699908 node_paths=PackedStringArray("MINIMAP")]
+unique_name_in_owner = true
 limit_left = 0
 limit_top = 0
 limit_right = 1280
@@ -122,6 +128,7 @@ script = ExtResource("4_namvk")
 MINIMAP = NodePath("../Minimap")
 
 [node name="Minimap" parent="." unique_id=983585876 node_paths=PackedStringArray("pieces_root", "board_camera") instance=ExtResource("5_ysy1r")]
+unique_name_in_owner = true
 pieces_root = NodePath("../PiecesRoot")
-board_camera = NodePath("../Camera2D")
+board_camera = NodePath("../BoardCamera")
 MINIMAP_PIECE_COLOR = Color(0.9390966, 1, 0.73299986, 1)
