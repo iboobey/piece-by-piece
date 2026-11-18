@@ -87,7 +87,7 @@ func capture_state() -> Dictionary:
 	var saved_groups : Array = []
 	
 	for group in group_manager.groups:
-		saved_groups.append(group.duplicate)
+		saved_groups.append(group.duplicate())
 	
 	return {
 		"pieces" : piece_states,
@@ -132,10 +132,10 @@ func restore_state(state : Dictionary):
 		for member in restored_group:
 			group_manager.groups_by_piece[member.get_instance_id()] = restored_group
 		
-		level_controller.grid_bools = state["grid bools"].duplicate(true)
+		level_controller.grid_bools = state["grid_bools"].duplicate(true)
 		
 		board_camera.set("target_position", state["camera_target_position"])
-		board_camera.set("target_rotation", state["camera_target_rotation"])
+		board_camera.set("target_rotation", state["camera_target_zoom"])
 
 
 func undo():

@@ -178,7 +178,7 @@ func try_snapping_to_a_group(main_piece : PuzzlePiece, selected_candidates: Arra
 			var moving_members : Array = get_drag_members(piece)
 			
 			if moving_members.has(main_piece):
-				return
+				continue
 			
 			var target_pos = main_piece.global_position + can_snap[1]
 			var pivot = piece.global_position
@@ -197,6 +197,8 @@ func try_snapping_to_a_group(main_piece : PuzzlePiece, selected_candidates: Arra
 					member.global_position += position_delta
 			
 			merge_pieces(main_piece,piece)
+			return true
+	return false
 
 
 func check_piece_closeness(main_piece : PuzzlePiece, piece : PuzzlePiece) -> Array:
@@ -304,12 +306,22 @@ func get_axis_correction_offset(group_min : float, group_max : float, bound_min 
 
 
 func ungroup_input(event : InputEvent):
-	if event.is_action_pressed("ungroup_selected") and not event.is_echo():
-		
-		ungroup_selected_pieces()
-		selected_pieces.clear()
-		get_viewport().set_input_as_handled()
+	if not event.is_action_pressed("ungroup_selected") or event.is_echo():
 		return
+	
+	var changed := false
+	
+	if not selected_pieces.is_empty():
+		UndoHistory.begin_action("Ungroup Selected Pieces")
+		changed = ungroup_selected_pieces()
+	
+	if changed:
+		UndoHistory.commit_action()
+	elif not selected_pieces.is_empty():
+		UndoHistory.cancel_action()
+	
+	selected_pieces.clear()
+	get_viewport().set_input_as_handled()
 
 
 func group_input(event : InputEvent):
@@ -319,8 +331,12 @@ func group_input(event : InputEvent):
 	var selected := selected_pieces.duplicate()
 	
 	if selected_pieces.size() <= 1:
+		get_viewport().set_input_as_handled()
 		return
 	
+	UndoHistory.begin_action("Group Selected Pieces")
+	
+	var changed := false
 	var merged_this_pass := true
 	
 	while merged_this_pass:
@@ -329,8 +345,15 @@ func group_input(event : InputEvent):
 		for main_piece in selected:
 			if not is_instance_valid(main_piece):
 				continue
+				
 			if try_snapping_to_a_group(main_piece, selected):
+				changed = true
 				merged_this_pass = true
+	
+	if changed:
+		UndoHistory.commit_action()
+	else:
+		UndoHistory.cancel_action()
 	
 	selected_pieces.clear()
 	get_viewport().set_input_as_handled()
